@@ -1,0 +1,10 @@
+{
+  "name": "Drive-In",
+  "authors": ["Daniele Guido"],
+  "url": "",
+  "source": "https://github.com/medialab/drive-in",
+  "licence": "LGPL/CECILL-C",
+  "visual": "http://tools.medialab.sciences-po.fr/sciencescape/res/visual",
+  "description": "...",
+  "doc": ""
+}
