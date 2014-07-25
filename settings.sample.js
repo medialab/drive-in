@@ -8,4 +8,4 @@ var settings = {
   Modify according to your own data ...
 */
 settings.apiKey = 'your (public!) api key';
-settings.defaultFolder = 'yur public default folder';
+settings.defaultFolder = 'your public default folder';
