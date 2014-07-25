@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" ng-app="tipot">
+
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Nunito:300,700' rel='stylesheet' type='text/css'>
+    <script src="settings.js"></script>
+  </head>
+
+  <body>
+    <style>
+    body{
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      line-height: 1.414em;
+      height: 100%;
+      margin: 0;
+      padding:0;
+      color: #888;
+    }
+
+    ul{
+      list-style-type: none;
+      margin: 36px;
+      padding-left: 0;
+    }
+
+    ul li{
+      font-size: 12px;
+      line-height: 18px;
+      
+      color: #888;
+    }
+
+    ul li.menu-item{
+      padding-left: 8px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    ul li.menu-item:hover{
+      color: #000;
+    }
+    ul li.menu-item.selected{
+      color: #181818;
+    }
+
+    sidebar{
+      width: 228px;
+      position: fixed;
+      top:0;
+      background: white;
+      height: 100%;
+    }
+
+    sidebar h1{
+      font-family: 'Nunito', sans-serif;
+      font-size: 13px;
+      background: #cc1600;
+      color: white;
+      display: inline-block;
+      font-weight: normal;
+      padding: 3px 8px;
+      line-height: 18px;
+      margin-bottom: 18px;
+
+    }
+
+    #wrapper{
+      padding: 75px 228px;
+    }
+
+    #wrapper h2{
+      font-family: 'Nunito', sans-serif;
+      font-size: 12px;
+      font-weight: normal;
+      color: #000;
+      /* position: absolute; */
+      /* right: -100px; */
+      display: inline-block;
+      /* width: 100px; */
+      float: left;
+      margin: 0 6px 0 0;
+    }
+    
+    .file{
+      width:100%;
+      overflow:hidden;
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .file img{
+      max-width: 100%;
+    }
+    </style>
+    <div id="drive-starter" ng-controller="starterCtrl"></div>
+
+    <div id="layout" ng-controller="layoutCtrl">
+      <sidebar>
+        <ul>
+          <li><h1>f-site</h1></li>
+          <!-- {{folders}} -->
+          <li class="selected menu-item">index</li> <!-- home folder -->
+          <li class="menu-item" ng-repeat="folder in folders">
+            {{folder.title}}
+          </li>
+        </ul>
+      </sidebar>
+
+      <div id="wrapper">
+
+        <!-- {{files}} -->
+        <div class="file" ng-repeat="file in files">
+          
+          <div ng-switch="file.type">
+            <div ng-switch-when="image">
+              <img src="{{file.src}}">
+            </div>
+            <div ng-switch-when="Document" lazy-file file="file">
+              {{file.title}}
+              <br/>
+              {{file.content}}
+            </div>
+          </div>  
+        </div>
+
+      </div>
+
+      
+    </div>
+    
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    
+    <!-- angular stuffs -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-route.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.min.js"></script>
+     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-sanitize.min.js"></script>
+
+    <!-- angular app -->
+    <script src="src/js/app.js"></script>
+    <script src="src/js/controllers.js"></script>
+    <script src="src/js/services.js"></script>
+    <script src="src/js/directives.js"></script>
+
+    <script>
+    /*
+      Onload fnctio called after google drive api initialization (it takes more than expected)
+    */
+    function load() {
+      var scope = angular.element($("#drive-starter")).scope(); // cfr StarterCtrl in controllers.js
+      scope.$emit(GOOGLE_CLIENT_INITIALIZED, settings);
+    }
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=load"></script>
+    
+    
+  </body>
+</html>
