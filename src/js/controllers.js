@@ -17,6 +17,8 @@ angular.module('tipot.controllers', [])
     $scope.items = {};
     $scope.status = 'ciao';
 
+    
+
     $scope.lazyLoad = function(file) {
       console.log('ehi, loading this', fileId);
       // enrich file with html content
@@ -59,12 +61,18 @@ angular.module('tipot.controllers', [])
       var files = [],
           folders = [];
 
+      console.log('select * from html where url="' + settings.baseUrl + folderId + '" and xpath=\'//div[@class="flip-entry"]\'')
       return YqlFactory.get({
         q: 'select * from html where url="' + settings.baseUrl + folderId + '" and xpath=\'//div[@class="flip-entry"]\'',
         format:'json',
         diagnostics: true
       }, function(res){ // FIRST LIST OF FILES
         
+        if(!res.query.results) {
+          $log.error("probably you didn't share the google folder, did you?");
+          return
+        }
+
         console.log(res);
         for(var i in res.query.results.div) {
       

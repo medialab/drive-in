@@ -1,5 +1,6 @@
 'use strict';
 
+
 angular.module('tipot.directives', [])
   .directive(
     "lazyFile",
@@ -21,7 +22,10 @@ angular.module('tipot.directives', [])
               element.text('....');
               xhr.open('GET', res.result.exportLinks['text/html']);
               xhr.onload = function() {
-                element.html('<h2>' + scope.file.title + '</h2>' + xhr.responseText.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1]);
+                console.log('onliad', arguments);
+                var body = ' ' + xhr.responseText.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
+                console.log('oaodiapoidpaouifpafaf', body)
+                element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
               };
               xhr.onerror = function(e) {
                 $log.error("[directive] lazyFile", e);

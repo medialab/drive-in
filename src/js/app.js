@@ -1,4 +1,7 @@
 'use strict';
+
+var mar = new Showdown.converter({ extensions: ['vimeo','twitter'] });
+
 angular.module('tipot', [
   'ngRoute',
   'ngSanitize',
@@ -6,7 +9,10 @@ angular.module('tipot', [
   'tipot.services',
   'tipot.directives'
 ])
-.config(['$httpProvider', function($httpProvider) {
+.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+
+  $routeProvider.otherwise({redirectTo: '/'});
+
   $httpProvider.responseInterceptors.push(['$q','$log', function($q, $log) {
     return function(promise) {
       return promise.then(function(response) {
