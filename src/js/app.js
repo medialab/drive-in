@@ -11,6 +11,9 @@ angular.module('tipot', [
 ])
 .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 
+  $routeProvider.when('/', {templateUrl: '/src/partials/index.html', controller: 'indexCtrl'});
+  $routeProvider.when('/:id', {templateUrl: '/src/partials/index.html', controller: 'pageCtrl'});
+  
   $routeProvider.otherwise({redirectTo: '/'});
 
   $httpProvider.responseInterceptors.push(['$q','$log', function($q, $log) {

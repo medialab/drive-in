@@ -16,6 +16,7 @@ angular.module('tipot.controllers', [])
 
     $scope.items = {};
     $scope.status = 'ciao';
+    $scope.title = settings.title;
 
     
 
@@ -57,7 +58,7 @@ angular.module('tipot.controllers', [])
     };
 
 
-    function grab(folderId, callback) {
+    $scope.grab = function(folderId, callback) {
       var files = [],
           folders = [];
 
@@ -72,17 +73,16 @@ angular.module('tipot.controllers', [])
           $log.error("probably you didn't share the google folder, did you?");
           return
         }
-
-        console.log(res);
-        for(var i in res.query.results.div) {
-      
-          var title = lookFor(res.query.results.div[i], 'class', 'flip-entry-title', function(d){
+        console.log(folderId, res.query.results.div.length);
+        
+        function structure(item) {
+          var title = lookFor(item, 'class', 'flip-entry-title', function(d){
                         return d.p.split(/^\d+\s/).pop();
                       }),
-              type = lookFor(res.query.results.div[i], 'class', 'flip-entry-thumb', function(d){
+              type = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.alt; // et oui monsieur
                       }),
-              id = res.query.results.div[i].id.substring(6);
+              id = item.id.substring(6);
           if(type === undefined) {
             // this is a real subfolder babe ...
             folders.push({
@@ -90,7 +90,7 @@ angular.module('tipot.controllers', [])
               id: id
             });
           } else {
-            var src = lookFor(res.query.results.div[i], 'class', 'flip-entry-thumb', function(d){
+            var src = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.src.split(/=s\d+$/).shift();
                       });
             if(type=="PNG Image" || type =="Photo" || type=="JPEG Image")
@@ -106,9 +106,16 @@ angular.module('tipot.controllers', [])
               src: src
             });
           };
-          
         };
-        console.log('heyy', files, folders);
+    
+        if(res.query.results.div.length) {
+          for(var i in res.query.results.div) {
+            structure(res.query.results.div[i]);
+          };
+        } else { // just one item under folder
+          structure(res.query.results.div);
+        }
+        console.log('found', folderId, files, folders);
 
         callback({
           files: files,
@@ -125,10 +132,11 @@ angular.module('tipot.controllers', [])
     */
     $rootScope.$on(GOOGLE_API_LOADED, function(){
       $log.info('layoutCtrl@GOOGLE_API_LOADED');
-        var t = grab(settings.defaultFolder, function(results) {
+        var t = $scope.grab(settings.defaultFolder, function(results) {
           console.log('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
           $scope.folders = results.folders;
+          $rootScope.ready = true;
           $rootScope.$emit(GOOGLE_DEFAULT_FOLDER_LOADED);
         });
     });
@@ -163,4 +171,34 @@ angular.module('tipot.controllers', [])
 
 
     $log.info('starterCtrl loaded.');
-  }]);
+  }])
+
+  .controller('indexCtrl', ['$log', function($log) {
+
+    $log.info('indexCtrl loaded.');
+  }])
+
+  .controller('pageCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
+    $scope.files = [];
+
+    $scope.sync = function(){
+      $scope.files = [];
+      var t = $scope.grab($routeParams.id, function(results) {
+        console.log('grabbing', results, $routeParams.id)
+        $scope.files = results.files;
+      });
+    }
+    // FIRST PAGE CTRL LOAD owaiting for the menu to be completed... then check if the folder is under the tree...
+    $rootScope.$on(GOOGLE_DEFAULT_FOLDER_LOADED, function() {
+      $log.info('pageCtrl@GOOGLE_DEFAULT_FOLDER_LOADED');
+      $scope.sync();
+    });
+
+
+    if($rootScope.ready){ 
+      $log.info("rootscpoe is ready, we're loaading this stuff again and again...");
+      $scope.sync();
+    }
+    
+    $log.info('pageCtrl loaded.');
+  }])

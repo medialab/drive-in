@@ -8,9 +8,13 @@
 
   <body>
     <style>
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+      display: none !important;
+    }
+
     body{
       font-family: 'Nunito', sans-serif;
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.414em;
       height: 100%;
       margin: 0;
@@ -25,10 +29,15 @@
     }
 
     ul li{
-      font-size: 12px;
+      font-size: 13px;
       line-height: 18px;
       
       color: #888;
+    }
+
+    ul li a {
+      color: #888;
+      text-decoration: none;
     }
 
     ul li.menu-item{
@@ -36,10 +45,10 @@
       margin-bottom: 12px;
       cursor: pointer;
     }
-    ul li.menu-item:hover{
+    ul li.menu-item:hover a{
       color: #000;
     }
-    ul li.menu-item.selected{
+    ul li.menu-item.selected a{
       color: #181818;
     }
 
@@ -66,11 +75,12 @@
 
     #wrapper{
       padding: 75px 228px;
+      width: 640px;
     }
 
     #wrapper h2{
       font-family: 'Nunito', sans-serif;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: normal;
       color: #000;
       /* position: absolute; */
@@ -94,38 +104,21 @@
     </style>
     <div id="drive-starter" ng-controller="starterCtrl"></div>
 
-    <div id="layout" ng-controller="layoutCtrl">
+    <div id="layout" ng-cloak ng-controller="layoutCtrl">
       <sidebar>
         <ul>
-          <li><h1>f-site</h1></li>
+          <li><h1>{{title}}</h1></li>
           <!-- {{folders}} -->
-          <li class="selected menu-item">index</li> <!-- home folder -->
+          <li class="selected menu-item">
+            <a href="#/">index</a>
+          </li> <!-- home folder -->
           <li class="menu-item" ng-repeat="folder in folders">
-            {{folder.title}}
+            <a href="#/{{folder.id}}">{{folder.title}}</a>
           </li>
         </ul>
       </sidebar>
 
-      <div id="wrapper">
-
-        <!-- {{files}} -->
-        <div class="file" ng-repeat="file in files">
-          
-          <div ng-switch="file.type">
-            <div ng-switch-when="image">
-              <img src="{{file.src}}">
-            </div>
-            <div ng-switch-when="Document" lazy-file file="file">
-              {{file.title}}
-              <br/>
-              {{file.content}}
-            </div>
-          </div>  
-        </div>
-
-      </div>
-
-      
+      <div id="wrapper" ng-view></div> <!-- cfr app.js and templates are under src/partials -->
     </div>
     
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -134,7 +127,7 @@
     <script src="src/js/libs/showdown.min.js"></script>
     <script src="src/js/libs/showdown-twitter.min.js"></script>
     <script src="src/js/libs/showdown-vimeo.js"></script>
-    
+
     <!-- angular stuffs -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-route.min.js"></script>
