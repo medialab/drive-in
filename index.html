@@ -3,6 +3,7 @@
 
   <head>
     <link href='http://fonts.googleapis.com/css?family=Nunito:300,700' rel='stylesheet' type='text/css'>
+
     <script src="settings.js"></script>
   </head>
 
@@ -115,6 +116,11 @@
           <li class="menu-item" ng-repeat="folder in folders">
             <a href="#/{{folder.id}}">{{folder.title}}</a>
           </li>
+          <li>&nbsp;</li>
+          <li class="menu-item" ng-repeat="bib in bibliography">
+            <a href="#/bibliography">{{bib.title}}</a>
+          </li>
+          
         </ul>
       </sidebar>
 
@@ -123,6 +129,8 @@
     
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
     
+    <!-- bibtext loader -->
+    <script src="src/js/libs/bibtex.js"></script>
     <!-- markdown stuffs -->
     <script src="src/js/libs/showdown.min.js"></script>
     <script src="src/js/libs/showdown-twitter.min.js"></script>
@@ -139,6 +147,7 @@
     <script src="src/js/controllers.js"></script>
     <script src="src/js/services.js"></script>
     <script src="src/js/directives.js"></script>
+
 
     <script>
     /*

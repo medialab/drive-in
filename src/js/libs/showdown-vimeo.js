@@ -3,17 +3,16 @@
           var vimeo = function(converter) {
             // ... extension code here ...
             return [
-
             {
               type: 'lang',
-              regex: '\\^\\^vimeo\\s+([^\\d]*(\\d+)[^\\s]*)\\s+(\\d+)?',
+              regex: '\\^\\^vimeo.*(http://vimeo.com/)(\\d+)',
               replace: function(match, url, id, height) {
-                var h = height || 281;
-                //return '<img src="http://b.vimeocdn.com/thumbnails/defaults/default.300x400.jpg">';
+                console.log('ciao', arguments)
+                var h = 400;
                 return '<iframe src="//player.vimeo.com/video/'+ id +'" width="100%" height="' + h + '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>'
+                return ''
               }
             }
-
             ]
           };
 

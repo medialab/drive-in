@@ -1,6 +1,12 @@
 'use strict';
 
-var mar = new Showdown.converter({ extensions: ['vimeo','twitter'] });
+var mar = new Showdown.converter({ extensions: ['vimeo'] }),
+    bib = new BibtexParser(),
+    mla = function(bibtex) {
+      bib.setInput(bibtex)
+      bib.bibtex();
+      return bib
+    };
 
 angular.module('tipot', [
   'ngRoute',
@@ -12,6 +18,8 @@ angular.module('tipot', [
 .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 
   $routeProvider.when('/', {templateUrl: '/src/partials/index.html', controller: 'indexCtrl'});
+  $routeProvider.when('/bibliography', {templateUrl: '/src/partials/bibliography.html', controller: 'bibCtrl'});
+  
   $routeProvider.when('/:id', {templateUrl: '/src/partials/index.html', controller: 'pageCtrl'});
   
   $routeProvider.otherwise({redirectTo: '/'});

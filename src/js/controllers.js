@@ -60,7 +60,9 @@ angular.module('tipot.controllers', [])
 
     $scope.grab = function(folderId, callback) {
       var files = [],
-          folders = [];
+          folders = [],
+          bibliography =[], // entries from a specific bib file!!!
+          styles =[]; // list of stylesheet to be applied
 
       console.log('select * from html where url="' + settings.baseUrl + folderId + '" and xpath=\'//div[@class="flip-entry"]\'')
       return YqlFactory.get({
@@ -71,6 +73,7 @@ angular.module('tipot.controllers', [])
         
         if(!res.query.results) {
           $log.error("probably you didn't share the google folder, did you?");
+          $log.info("received", res);
           return
         }
         console.log(folderId, res.query.results.div.length);
@@ -93,18 +96,49 @@ angular.module('tipot.controllers', [])
             var src = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.src.split(/=s\d+$/).shift();
                       });
-            if(type=="PNG Image" || type =="Photo" || type=="JPEG Image")
-              type = "image";
-            else 
-              console.log(type)
             
+            if(title=="style.css")
+              type="css";
+            else if(title == "bibliography")
+              type="bibtex";
 
-            files.push({
-              title: title,
-              id: id,
-              type: type,
-              src: src
-            });
+            switch(title, type) {
+              case "bibtex":
+                bibliography.push({
+                  title: title,
+                  id: id,
+                  type: type,
+                  src: src
+                });
+                break;
+              case "css":
+                styles.push({
+                  title: title,
+                  id: id,
+                  type: type,
+                  src: src
+                });
+                break;
+              case "PEG Image":
+              case "PNG Image":
+              case "Photo":
+                files.push({
+                  title: title,
+                  id: id,
+                  type: 'image',
+                  src: src
+                });
+                break;
+              default:
+                files.push({
+                  title: title,
+                  id: id,
+                  type: type,
+                  src: src
+                });
+                break;
+            };
+              
           };
         };
     
@@ -117,9 +151,13 @@ angular.module('tipot.controllers', [])
         }
         console.log('found', folderId, files, folders);
 
+        // this last loop allow to put together same name files
+
         callback({
           files: files,
-          folders: folders
+          folders: folders,
+          styles: styles,
+          bibliography: bibliography,
         });
         //$scope.$apply();
       });
@@ -133,9 +171,19 @@ angular.module('tipot.controllers', [])
     $rootScope.$on(GOOGLE_API_LOADED, function(){
       $log.info('layoutCtrl@GOOGLE_API_LOADED');
         var t = $scope.grab(settings.defaultFolder, function(results) {
-          console.log('grabbing', results, settings.defaultFolder)
+          $log.info('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
           $scope.folders = results.folders;
+
+          $scope.bibliography = results.bibliography;
+          
+          /* inject javascript, todo
+          for( var s in results.styles) {
+            alert('aosdpaodpod');
+            $('head').append('<link rel="stylesheet" href="' + results.styles[s].src +'" type="text/css" />');
+          };
+          */
+
           $rootScope.ready = true;
           $rootScope.$emit(GOOGLE_DEFAULT_FOLDER_LOADED);
         });
@@ -177,7 +225,45 @@ angular.module('tipot.controllers', [])
 
     $log.info('indexCtrl loaded.');
   }])
+  
+  /*
 
+    BIBLIOGRAPHY
+    ===
+    This special controller handle the BIBLIOGRAPHY view.
+    Normally you should have at least a file called bibliography something in your home folder
+  
+  */
+  .controller('bibCtrl', ['$scope', '$rootScope', '$log', 'GoogleApiFactory', function($scope, $rootScope, $log, GoogleApiFactory) {
+    $scope.entries = [];
+
+
+    $scope.sync = function(){
+      $log.info('bibCtrl.sync', $scope.bibliography);
+
+      GoogleApiFactory.getText($scope.bibliography[0].id).then(function(res) {
+        $scope.entries = mla(res.data).getEntries(); // todo some sorting babe
+      });
+    };
+
+
+    $rootScope.$on(GOOGLE_DEFAULT_FOLDER_LOADED, function() {
+      $log.info('pageCtrl@GOOGLE_DEFAULT_FOLDER_LOADED');
+      $scope.sync();
+    });
+
+
+    if($rootScope.ready){ 
+      $log.info("rootscpoe is ready, we're loaading this stuff again and again...");
+      $scope.sync();
+    }
+
+
+    $log.info('bibCtrl loaded.');
+  }])
+  /*
+    This special controller handle the basic view.
+  */
   .controller('pageCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
     $scope.files = [];
 

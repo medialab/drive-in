@@ -9,3 +9,4 @@ var settings = {
 */
 settings.apiKey = 'your (public!) api key';
 settings.defaultFolder = 'your public default folder';
+settings.title = 'DRIVE-IN'

@@ -4,36 +4,51 @@
 angular.module('tipot.directives', [])
   .directive(
     "lazyFile",
-    ['$window', '$document', '$log', function($window, $document, $log) {
+    ['$window', '$document', '$log', 'GoogleApiFactory', function($window, $document, $log, GoogleApiFactory) {
       return {
         scope: {
           file: '='
         },
         link: function(scope, element, attrs) {
-          $log.info('[directive] lazyFile', scope.file.id);
+          $log.info('[directive] lazyFile', scope.file.title, scope.file);
           
+          /*
+          GoogleApiFactory.getFile({id:scope.file.id, exportFormat:'html'}, function(){
+            alert();
+            console.log(arguments);
+          })
+*/
           element.text('...');//loading
-          
-          gapi.client.drive.files.get({
-            'fileId': scope.file.id
-          }).execute(function(res){
-            if(res.result.mimeType == 'application/vnd.google-apps.document') {
-              var xhr = new XMLHttpRequest();
-              element.text('....');
-              xhr.open('GET', res.result.exportLinks['text/html']);
-              xhr.onload = function() {
-                console.log('onliad', arguments);
-                var body = ' ' + xhr.responseText.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
-                console.log('oaodiapoidpaouifpafaf', body)
-                element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
-              };
-              xhr.onerror = function(e) {
-                $log.error("[directive] lazyFile", e);
-              };
-              xhr.send();
+          // why do not load it differently ?
 
-            };
-          });
+          if(scope.file.type == "Document"){
+            GoogleApiFactory.getHtml(scope.file.id).then(function(res){
+              element.text('....');
+              var body = ' ' + res.data.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
+              element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
+            });
+          } else {
+
+            gapi.client.drive.files.get({
+              'fileId': scope.file.id
+            }).execute(function(res){
+              if(res.result.mimeType == 'application/vnd.google-apps.document') {
+                var xhr = new XMLHttpRequest();
+                element.text('....');
+                xhr.open('GET', res.result.exportLinks['text/html']);
+                xhr.onload = function() {
+                  var body = ' ' + xhr.responseText.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
+                  console.log('oaodiapoidpaouifpafaf', body)
+                  element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
+                };
+                xhr.onerror = function(e) {
+                  $log.error("[directive] lazyFile.onerror", e);
+                };
+                xhr.send();
+
+              };
+            });
+          }
         }
       }
     }])
