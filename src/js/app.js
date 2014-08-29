@@ -20,6 +20,11 @@ angular.module('tipot', [
   $routeProvider.when('/', {templateUrl: '/src/partials/index.html', controller: 'indexCtrl'});
   $routeProvider.when('/bibliography', {templateUrl: '/src/partials/bibliography.html', controller: 'bibCtrl'});
   
+  $routeProvider.when('/drive-in', {templateUrl: '/src/partials/drive-in/starter.html', controller: 'driveCtrl'});
+  $routeProvider.when('/drive-in/:folderId', {templateUrl: '/src/partials/drive-in/index.html', controller: 'driveCtrl'});
+  $routeProvider.when('/drive-in/:folderId/:id', {templateUrl: '/src/partials/drive-in/index.html', controller: 'drivePageCtrl'});
+  
+
   $routeProvider.when('/:id', {templateUrl: '/src/partials/index.html', controller: 'pageCtrl'});
   
   $routeProvider.otherwise({redirectTo: '/'});

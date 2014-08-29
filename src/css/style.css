@@ -1,0 +1,18 @@
+label{
+  display: block;
+}
+
+input{
+  width: 480px;
+  font-family: 'Nunito';
+  font-size: 1em;
+  line-height: 1.6em;
+  padding: 0.4em;
+}
+
+h1{
+
+  color: #000;
+  font-family: 'Helvetica Neue';
+  font-size:1.2em;
+}

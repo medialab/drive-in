@@ -119,7 +119,7 @@ angular.module('tipot.controllers', [])
                   src: src
                 });
                 break;
-              case "PEG Image":
+              case "JPEG Image":
               case "PNG Image":
               case "Photo":
                 files.push({
@@ -260,6 +260,50 @@ angular.module('tipot.controllers', [])
 
 
     $log.info('bibCtrl loaded.');
+  }])
+  /*
+    driveCtrl
+    ===
+    A very special controller happening when urling '/drive-in/:folderId' or '/drive-in/'
+    It forces the reloading of everything based on a new folderId;
+    Note: it does not change settings.baseFolder.
+  */
+  .controller('driveCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
+    
+    $scope.folderUrl = '';
+    $scope.folderId = '';
+
+    $scope.driveIsReady = false;
+
+    $scope.sync =function() {
+      $log.info("driveCtrl @$rootScope is ready", $routeParams.folderId);
+      if($routeParams.folderId) {
+        $log.info("driveCtrl $rootScope is ready and have a nice google drive id", $routeParams.folderId);
+
+        $scope.grab($routeParams.folderId, function(results) {
+          $log.info('grabbing', results, $routeParams.folderId)
+          $scope.files = results.files;
+          $scope.folders = results.folders;
+
+          $scope.bibliography = results.bibliography;
+
+          $scope.driveIsReady = true;
+        });
+      }
+    }
+
+    $rootScope.$on(GOOGLE_DEFAULT_FOLDER_LOADED, $scope.sync);
+    
+    $log.info('driveCtrl loaded.');
+  }])
+  .controller('drivePageCtrl', ['$scope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
+
+    if($rootScope.ready){ 
+      $log.info("driveCtrl $rootScope is ready");
+      //$scope.sync();
+    }
+    
+    $log.info('drivePageCtrl loaded.');
   }])
   /*
     This special controller handle the basic view.

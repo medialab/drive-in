@@ -1,0 +1,7 @@
+<h1>Welcome to drive-in</h1>
+<div ng-if="ready">
+  <label><em>sharing url</em> for a google drive <strong>public</strong> folder</label>
+  <input type="url" ng-model="folderUrl"/>
+  {{folderUrl}}
+</div>
+<div ng-if="!ready">loading...</div>
