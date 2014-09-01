@@ -17,15 +17,15 @@ angular.module('tipot', [
 ])
 .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 
-  $routeProvider.when('/', {templateUrl: '/src/partials/index.html', controller: 'indexCtrl'});
-  $routeProvider.when('/bibliography', {templateUrl: '/src/partials/bibliography.html', controller: 'bibCtrl'});
+  $routeProvider.when('/', {templateUrl: settings.partials + '/index.html', controller: 'indexCtrl'});
+  $routeProvider.when('/bibliography', {templateUrl: settings.partials + '/bibliography.html', controller: 'bibCtrl'});
   
-  $routeProvider.when('/drive-in', {templateUrl: '/src/partials/drive-in/starter.html', controller: 'driveCtrl'});
-  $routeProvider.when('/drive-in/:folderId', {templateUrl: '/src/partials/drive-in/index.html', controller: 'driveCtrl'});
-  $routeProvider.when('/drive-in/:folderId/:id', {templateUrl: '/src/partials/drive-in/index.html', controller: 'drivePageCtrl'});
+  $routeProvider.when('/drive-in', {templateUrl: settings.partials + '/drive-in/starter.html', controller: 'driveCtrl'});
+  $routeProvider.when('/drive-in/:folderId', {templateUrl: settings.partials + '/drive-in/index.html', controller: 'driveCtrl'});
+  $routeProvider.when('/drive-in/:folderId/:id', {templateUrl: settings.partials + '/drive-in/index.html', controller: 'drivePageCtrl'});
   
 
-  $routeProvider.when('/:id', {templateUrl: '/src/partials/index.html', controller: 'pageCtrl'});
+  $routeProvider.when('/:id', {templateUrl: settings.partials + '/index.html', controller: 'pageCtrl'});
   
   $routeProvider.otherwise({redirectTo: '/'});
 
