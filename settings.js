@@ -9,5 +9,5 @@ var settings = {
 */
 settings.apiKey = 'AIzaSyCYfU7l7KYDkw9bDOQ6xGR85T0xzJg7MvQ';
 settings.defaultFolder = '0ByZTyEnzm9qqLWVPaE9kaDc4YW8';
-settings.title = 'DRIVE-IN'
-settings.partials = '/drive-in/src/partials' // basefolder URL for angular partials tamplates
+settings.title = 'drive-in';
+settings.partials = location.pathname + 'src/partials' // basefolder URL for angular partials tamplates

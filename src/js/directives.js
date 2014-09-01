@@ -10,7 +10,7 @@ angular.module('tipot.directives', [])
           file: '='
         },
         link: function(scope, element, attrs) {
-          $log.info('[directive] lazyFile', scope.file.title, scope.file);
+          //$log.debug('[directive] lazyFile', scope.file.title, scope.file);
           
           /*
           GoogleApiFactory.getFile({id:scope.file.id, exportFormat:'html'}, function(){
@@ -38,7 +38,7 @@ angular.module('tipot.directives', [])
                 xhr.open('GET', res.result.exportLinks['text/html']);
                 xhr.onload = function() {
                   var body = ' ' + xhr.responseText.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
-                  console.log('oaodiapoidpaouifpafaf', body)
+                  //console.log('oaodiapoidpaouifpafaf', body)
                   element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
                 };
                 xhr.onerror = function(e) {

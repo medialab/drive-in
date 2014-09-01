@@ -1,18 +1,43 @@
 label{
   display: block;
+  margin-bottom: 0.4em;
 }
 
 input{
   width: 480px;
-  font-family: 'Nunito';
-  font-size: 1em;
-  line-height: 1.6em;
+  font: 1em/1em 'Open Sans', sans-serif;
   padding: 0.4em;
+  border: 1px solid #ababab;
+
+}
+input:focus { outline: none; 
+  border-bottom: 1px solid #000;
+}
+input.ng-invalid-pattern{
+  border-bottom: 1px solid red;
 }
 
 h1{
-
+  margin: 0;
   color: #000;
   font-family: 'Helvetica Neue';
-  font-size:1.2em;
+  font-size:1em;
+  font-weight: normal;
 }
+
+h2{
+  margin: 0;
+  font: 1em/1.618em 'Helvetica Neue';
+  font-weight: normal;
+}
+
+.file .filename{
+  font-size: 1em;
+  color: #000;
+  float: left;
+}
+
+#wrapper span, #wrapper img{
+  max-width: 100%;
+}
+

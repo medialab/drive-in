@@ -2,7 +2,7 @@
 <html lang="en" ng-app="tipot">
 
   <head>
-    <link href='http://fonts.googleapis.com/css?family=Nunito:300,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
     <link href='src/css/style.css' rel='stylesheet' type='text/css'>
 
     <script src="settings.js"></script>
@@ -15,13 +15,13 @@
     }
 
     body{
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 13px;
-      line-height: 1.414em;
+      line-height: 1.618em;
       height: 100%;
       margin: 0;
       padding:0;
-      color: #888;
+      color: #555;
     }
 
     ul{
@@ -55,7 +55,7 @@
     }
 
     sidebar{
-      width: 228px;
+      width: 298px;
       position: fixed;
       top:0;
       background: white;
@@ -63,7 +63,7 @@
     }
 
     sidebar h1{
-      font-family: 'Nunito', sans-serif;
+      
       font-size: 13px;
       background: #cc1600;
       color: white;
@@ -76,22 +76,11 @@
     }
 
     #wrapper{
-      padding: 75px 228px;
+      padding: 75px 298px;
       width: 640px;
     }
 
-    #wrapper h2{
-      font-family: 'Nunito', sans-serif;
-      font-size: 13px;
-      font-weight: normal;
-      color: #000;
-      /* position: absolute; */
-      /* right: -100px; */
-      display: inline-block;
-      /* width: 100px; */
-      float: left;
-      margin: 0 6px 0 0;
-    }
+    
     
     .file{
       width:100%;
@@ -116,6 +105,15 @@
           </li> <!-- home folder -->
           <li class="menu-item" ng-repeat="folder in folders">
             <a href="#/{{folder.id}}">{{folder.title}}</a>
+          </li>
+          <li>&nbsp;</li>
+          <li class="menu-item" ng-repeat="section in sections">
+            <span ng-if="section.type">
+              <a title="{{section.title}}">{{section.title|cut:true:50}}</a>
+            </span>
+            <span ng-if="!section.type">
+              <a href="#/drive-in/{{section.id}}" title="{{section.title}}">{{section.title|cut:true:50}}</a>
+            </span>
           </li>
           <li>&nbsp;</li>
           <li class="menu-item" ng-repeat="bib in bibliography">
@@ -149,6 +147,7 @@
     <script src="src/js/controllers.js"></script>
     <script src="src/js/services.js"></script>
     <script src="src/js/directives.js"></script>
+    <script src="src/js/filters.js"></script>
 
 
     <script>

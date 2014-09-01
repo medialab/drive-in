@@ -13,7 +13,8 @@ angular.module('tipot', [
   'ngSanitize',
   'tipot.controllers',
   'tipot.services',
-  'tipot.directives'
+  'tipot.directives',
+  'tipot.filters'
 ])
 .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 
@@ -25,7 +26,7 @@ angular.module('tipot', [
   $routeProvider.when('/drive-in/:folderId/:id', {templateUrl: settings.partials + '/drive-in/index.html', controller: 'drivePageCtrl'});
   
 
-  $routeProvider.when('/:id', {templateUrl: settings.partials + '/index.html', controller: 'pageCtrl'});
+  $routeProvider.when('/:id', {templateUrl: settings.partials + '/page.html', controller: 'pageCtrl'});
   
   $routeProvider.otherwise({redirectTo: '/'});
 

@@ -1,3 +1,15 @@
+<h1>Test drive</h1>
+<div ng-show="ready">
+  <label><em>sharing url</em> for a google drive <strong>public</strong> folder</label>
+  <input ng-required ng-pattern="/https:\/\/drive.google.com\/folderview\?id\=[A-Za-z\d]+.*/" type="url" ng-model="folderUrl"/>
+  
+  <div ng-if="folderId">
+    Everything seems fine.
+    <a  href="#/drive-in/{{folderId}}">View public folder</a>
+  </div>
+</div>
+<div ng-show="!ready">loading...</div>
+
 <!-- {{files}} -->
         <div class="file" ng-repeat="file in files">
           

@@ -1,0 +1,15 @@
+
+<!-- {{files}} -->
+        <div class="file" ng-repeat="file in files">
+          
+          <div ng-switch="file.type">
+            <div ng-switch-when="image">
+              <img src="{{file.src}}">
+            </div>
+            <div ng-switch-when="Document" lazy-file file="file">
+              {{file.title}}
+              <br/>
+              {{file.content}}
+            </div>
+          </div>  
+        </div>
