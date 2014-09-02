@@ -25,7 +25,7 @@ angular.module('tipot.directives', [])
             GoogleApiFactory.getHtml(scope.file.id).then(function(res){
               element.text('....');
               var body = ' ' + res.data.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
-              element.html('<h2>' + scope.file.title + '</h2>' + mar.makeHtml(body));
+              element.html(mar.makeHtml(body.trim()));
             });
           } else {
 

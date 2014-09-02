@@ -1,15 +1,6 @@
 
 <!-- {{files}} -->
-        <div class="file" ng-repeat="file in files">
-          
-          <div ng-switch="file.type">
-            <div ng-switch-when="image">
-              <img src="{{file.src}}">
-            </div>
-            <div ng-switch-when="Document" lazy-file file="file">
-              {{file.title}}
-              <br/>
-              {{file.content}}
-            </div>
-          </div>  
-        </div>
+<!-- page {{ready}}, {{files.length}} -->
+<div ng-if="pageIsReady && files.length == 0"><strong>Ouch!</strong> There is no content here, the folder seems empty.</div>
+<div ng-if="!pageIsReady">Please wait, <em>loading contents</em>...</div>
+<div class="file" ng-repeat="file in files" ng-include="'src/partials/file.html'"></div>

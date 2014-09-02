@@ -361,12 +361,15 @@ angular.module('tipot.controllers', [])
   */
   .controller('pageCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
     $scope.files = [];
+    $scope.pageIsReady = false; // every time we reload the page
 
     $scope.sync = function(){
       $scope.files = [];
+      $scope.pageIsReady = true;
       var t = $scope.grab($routeParams.id, function(results) {
         console.log('grabbing', results, $routeParams.id)
         $scope.files = results.files;
+        
       });
     }
     // FIRST PAGE CTRL LOAD owaiting for the menu to be completed... then check if the folder is under the tree...

@@ -8,9 +8,11 @@ input{
   font: 1em/1em 'Open Sans', sans-serif;
   padding: 0.4em;
   border: 1px solid #ababab;
-
+  transition: border-color .3s ease-in-out;
 }
-input:focus { outline: none; 
+
+input:focus {
+  outline: none;
   border-bottom: 1px solid #000;
 }
 input.ng-invalid-pattern{
@@ -20,8 +22,7 @@ input.ng-invalid-pattern{
 h1{
   margin: 0;
   color: #000;
-  font-family: 'Helvetica Neue';
-  font-size:1em;
+  font: 2rem/1.4375em 'Helvetica Neue';
   font-weight: normal;
 }
 
@@ -41,3 +42,20 @@ h2{
   max-width: 100%;
 }
 
+p {
+  font-size: 16px;
+  font-size: 1rem;
+  line-height: 23px;
+  line-height: 1.4375rem;
+  font-weight: 400;
+  font-family: georgia,"times new roman",times,serif;
+}
+
+img{
+  display: block;
+}
+
+.caption{
+  padding: 10px;
+  background: #f7f7f7;
+}

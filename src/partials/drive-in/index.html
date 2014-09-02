@@ -1,26 +1,5 @@
 <!-- {{files}} -->
 <div ng-if="driveIsReady">
-        <div class="file" ng-repeat="file in files">
-          <!-- div class="filename">{{file.title}}</div -->
-          <a id="file-{{file.id}}"></a>
-          <div ng-switch="file.type">
-            <div ng-switch-when="image">
-              <img src="{{file.src}}">
-            </div>
-            <div ng-switch-when="PDF">
-
-              
-              <!-- img src="{{file.src}}" this is the file preview...-->
-              <a target="_blank" href="https://docs.google.com/file/d/0ByZTyEnzm9qqbWRTcE9sSmZkeTA">view file online</a>
-            </div>
-           
-            <div ng-switch-when="Document" lazy-file file="file">
-              {{file.content}}
-            </div>
-             <div ng-switch-when="Spreadsheet">
-              <a target="_blank" href="https://docs.google.com/spreadsheets/d/{{file.id}}">view spreadsheet online<!-- img src="{{file.src}}" --></a> 
-            </div>
-          </div>  
-        </div>
+  <div class="file" ng-repeat="file in files" ng-include="'src/partials/file.html'"></div>
 </div>
 <div ng-if="!driveIsReady">Please wait, drive-in is <em>loading</em>......</div>
