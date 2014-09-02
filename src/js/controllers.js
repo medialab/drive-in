@@ -84,7 +84,13 @@ angular.module('tipot.controllers', [])
         if(!res.query.results) {
           $log.error("probably you didn't share the google folder, did you?");
           $log.info("received", res);
-          return;
+          return callback({
+            files: files,
+            folders: folders,
+            styles: styles,
+            sections: sections,
+            bibliography: bibliography,
+          });;
         }
         console.log(folderId, res.query.results.div.length);
         
@@ -258,7 +264,7 @@ angular.module('tipot.controllers', [])
       if(!v)
         return;
 
-      var candidate = v.match(/[A-Za-z0-9]{12,}/);
+      var candidate = v.match(/[A-Za-z0-9_]{12,}/);
       if(candidate)
         $scope.folderId = candidate.pop();
     });
@@ -365,8 +371,9 @@ angular.module('tipot.controllers', [])
 
     $scope.sync = function(){
       $scope.files = [];
-      $scope.pageIsReady = true;
+      
       var t = $scope.grab($routeParams.id, function(results) {
+        $scope.pageIsReady = true;
         console.log('grabbing', results, $routeParams.id)
         $scope.files = results.files;
         
