@@ -10,25 +10,22 @@ angular.module('tipot.directives', [])
           file: '='
         },
         link: function(scope, element, attrs) {
-          //$log.debug('[directive] lazyFile', scope.file.title, scope.file);
+          $log.debug('[directive] lazyFile', scope.file.title, scope.file.type, scope.file.id);
           
-          /*
-          GoogleApiFactory.getFile({id:scope.file.id, exportFormat:'html'}, function(){
-            alert();
-            console.log(arguments);
-          })
-*/
-          element.text('...');//loading
-          // why do not load it differently ?
-
+          element.text('.');//loading
+          
           if(scope.file.type == "Document"){
             GoogleApiFactory.getHtml(scope.file.id).then(function(res){
-              element.text('....');
+              element.text('...');
               var body = res.data.match(/<body[^>]*>((.|[\n\r])*)<\/body>/i)[1];
-              element.html(mar.makeHtml(body.trim()));
+              element.html(mar.makeHtml(' ' + body.trim()));
             });
-          } else {
-
+          } else if(scope.file.type == "html"){
+            element.text('...');
+            GoogleApiFactory.getText(scope.file.id).then(function(res){
+              element.html(res.data);
+            });
+          } else  {
             gapi.client.drive.files.get({
               'fileId': scope.file.id
             }).execute(function(res){

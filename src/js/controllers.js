@@ -120,13 +120,15 @@ angular.module('tipot.controllers', [])
             var src = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.src.split(/=s\d+$/).shift();
                       });
-            
-            if(title=="style.css")
-              type="css";
+            // type assignation based on file naming 
+            if(title.text && title.text.match(/\.html$/))
+              type = "html";
+            else if(title == "style.css")
+              type = "css";
             else if(title == "bibliography")
-              type="bibtex";
+              type = "bibtex";
 
-            switch(title, type) {
+            switch(type) {
               case "bibtex":
                 bibliography.push({
                   title: title.text,

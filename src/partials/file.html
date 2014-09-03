@@ -1,6 +1,6 @@
 <!-- div class="filename">{{file.title}}</div -->
           <a id="file-{{file.id}}"></a>
-          <div ng-switch="file.type" class="file">
+          <div ng-switch="file.type">
             <div ng-switch-when="image">
               <p></p>
               <img src="{{file.src}}">
@@ -13,6 +13,10 @@
            
             <div ng-switch-when="Document">
               <h2 class="filename">{{file.title}}</h2>
+              <div lazy-file file="file"></div>
+            </div>
+            
+            <div ng-switch-when="html">
               <div lazy-file file="file"></div>
             </div>
 
