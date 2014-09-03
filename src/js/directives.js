@@ -27,7 +27,7 @@ angular.module('tipot.directives', [])
               // intercept different google docs bookmark
               // in the form of https://docs.google.com/a/sciencespo.fr/document/d/1G4l1YG8DZAx9YHmQNTNomgwJpSL6X5hwPDuf1An9b30/edit#bookmark=id.2av83x11u4rf
               body = body.trim().replace(/href="[^"]*document\/d\/([^\/]*)\/[^#]*#bookmark=([^"]{1,})"/g, function(m, fileId, bookmark) {
-                return 'href="'+ $rootScope.path +'?d='+ fileId +'&bookmark=' + bookmark + '"';
+                return 'href="'+ $rootScope.path +'?doc='+ fileId +'&bookmark=' + bookmark + '"';
               });
 
               element.html(mar.makeHtml(' ' + body.trim()));
