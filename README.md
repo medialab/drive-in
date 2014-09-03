@@ -6,7 +6,8 @@ Only some [markdown syntax](http://daringfireball.net/projects/markdown/syntax) 
 Everythiong else is driven by googledocs!
 
 
-To be used in conjunction with (aaa)http://www.editey.com/ which allow you to comment and edit collaboratively evarey pieces of code!
+#### advanced usages
+To be used in conjunction with [editey](http://www.editey.com/) which allow you to comment and edit collaboratively on every pieces of code!
 
 ## How to install: 30 sec. installation
 
@@ -30,7 +31,11 @@ Voila the default settings :
 
 That'is
 
-###"... and if I want to use vimeo videos?"
+## Q&A
+#### "I want to add a bookmark (internal link) into a google document"
+In Google Docs, the links between different parts of the same documents are made by [bookmarks](https://support.google.com/docs/answer/45352?hl=en). Drive-in can recognize those links and transform them in html anchor links.
+
+#### "... and if I want to use vimeo videos?"
 This is a markdown magic. Just type in a google doc a __line__ starting with `^^vimeo` followed by the vimeo share link:
 
 	Oh! bla bla bla...
@@ -38,3 +43,6 @@ This is a markdown magic. Just type in a google doc a __line__ starting with `^^
 	^^vimeo http://vimeo.com/38447770
 	
 	Eh! bla bla bla...
+<!--
+#### "How can UI intagrate BIBTEX references?"
+There is a bibtex javascript parser for google docs named . -->

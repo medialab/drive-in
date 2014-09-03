@@ -14,8 +14,12 @@ angular.module('tipot', [
   'tipot.controllers',
   'tipot.services',
   'tipot.directives',
-  'tipot.filters'
+  'tipot.filters',
+  'angularytics'
 ])
+.config(function(AngularyticsProvider) {
+  AngularyticsProvider.setEventHandlers(['Console', 'GoogleUniversal']);
+})
 .config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 
   $routeProvider.when('/', {templateUrl: settings.partials + '/index.html', controller: 'indexCtrl'});
@@ -47,4 +51,7 @@ angular.module('tipot', [
       });
     };
   }]);
-}]);
+}])
+.run(function(Angularytics) {
+    Angularytics.init();
+});
