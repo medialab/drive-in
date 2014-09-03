@@ -3,11 +3,11 @@
           <div ng-switch="file.type">
             <div ng-switch-when="image">
               <p></p>
-              <img src="{{file.src}}">
+              <img ng-src="{{file.src}}">
               <div class="caption">{{file.title}}</div>
             </div>
             <div ng-switch-when="PDF">  
-              <!-- img src="{{file.src}}" this is the file preview...-->
+              <!-- img ng-src="{{file.src}}" this is the file preview...-->
               <a target="_blank" href="https://docs.google.com/file/d/0ByZTyEnzm9qqbWRTcE9sSmZkeTA">view file online</a>
             </div>
            
@@ -21,6 +21,6 @@
             </div>
 
             <div ng-switch-when="Spreadsheet">
-              <a target="_blank" href="https://docs.google.com/spreadsheets/d/{{file.id}}">view spreadsheet online<!-- img src="{{file.src}}" --></a> 
+              <a target="_blank" href="https://docs.google.com/spreadsheets/d/{{file.id}}">view spreadsheet online<!-- img ng-src="{{file.src}}" --></a> 
             </div>
-          </div>  
+          </div>

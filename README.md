@@ -43,6 +43,11 @@ This is a markdown magic. Just type in a google doc a __line__ starting with `^^
 	^^vimeo http://vimeo.com/38447770
 	
 	Eh! bla bla bla...
+
+### configure google analytics
+Thanks to [angularytics](https://github.com/mgonto/angularytics). The google analytics script is executed directly inside index.html. Every step in every angular view is quietly recorded.
+
+
 <!--
 #### "How can UI intagrate BIBTEX references?"
 There is a bibtex javascript parser for google docs named . -->

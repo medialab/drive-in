@@ -3,6 +3,7 @@
 var GOOGLE_CLIENT_INITIALIZED = 'GOOGLE_CLIENT_INITIALIZED',
     GOOGLE_API_LOADED = 'GOOGLE_API_LOADED',
     GOOGLE_DEFAULT_FOLDER_LOADED = 'GOOGLE_DEFAULT_FOLDER_LOADED',
+
     GOOGLE_LOAD_FILE = 'GOOGLE_LOAD_FILE';
 
 
@@ -204,7 +205,7 @@ angular.module('tipot.controllers', [])
       How to get google drive folder content without being trapped by authorization
     */
     $rootScope.$on(GOOGLE_API_LOADED, function(){
-      $log.info('layoutCtrl@GOOGLE_API_LOADED');
+      $log.debug('layoutCtrl @GOOGLE_API_LOADED');
         var t = $scope.grab(settings.defaultFolder, function(results) {
           $log.info('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
@@ -224,7 +225,32 @@ angular.module('tipot.controllers', [])
         });
     });
 
-    $log.info('layoutCtrl loaded.');
+
+    $rootScope.$on('$routeChangeSuccess', function(newRoute, oldRoute) {
+      $log.debug('layoutCtrl @$routeChangeSuccess', $routeParams.bookmark? 'bookmark=' + $routeParams.bookmark:'');
+      $rootScope.path = '/#' + $location.path();
+      $rootScope.bookmark = $routeParams.bookmark;
+    });
+
+
+    $rootScope.$on('$routeUpdate', function() {
+      $log.debug('layoutCtrl @$routeUpdate', arguments);
+      $rootScope.bookmark = $routeParams.bookmark; // try to scroll to, hopeing with success...
+      $rootScope.anchoring();
+    });
+
+    /*
+      #function anchoring
+      Scroll to $rootScope.bookmark anchor inside current VIEW, according to its content. This function have to be available for our `file` directive (cfr. directives.js)
+    */
+    $rootScope.anchoring = function() {
+      $location.hash($rootScope.bookmark);
+      $anchorScroll();
+      $location.hash('d');
+    };
+
+
+    $log.log('%c layoutCtrl loaded.', 'color: #c0c0c0');
   }])
   
   
@@ -245,7 +271,7 @@ angular.module('tipot.controllers', [])
 
     $scope.$on(GOOGLE_CLIENT_INITIALIZED, function(e, settings){
 
-      $log.info('starterCtrl@GOOGLE_CLIENT_INITIALIZED, api key received: ', settings.apiKey);
+      $log.debug('starterCtrl @GOOGLE_CLIENT_INITIALIZED, api key received: ', settings.apiKey);
       gapi.client.setApiKey(settings.apiKey);
       gapi.client.load('drive', 'v2', function(){
         $rootScope.$emit(GOOGLE_API_LOADED);
@@ -253,9 +279,17 @@ angular.module('tipot.controllers', [])
     });
 
 
-    $log.info('starterCtrl loaded.');
+    $log.log('%c starterCtrl loaded.', 'color: #c0c0c0');
   }])
 
+
+  /*
+
+    INDEX
+    =====
+    Main page controller.
+
+  */
   .controller('indexCtrl', ['$log', '$scope', function($log, $scope) {
     $scope.folderUrl = '';// test if folderURl is a valid one. If yes, fill the folderId dir var
     $scope.folderId = '';
@@ -270,7 +304,8 @@ angular.module('tipot.controllers', [])
       if(candidate)
         $scope.folderId = candidate.pop();
     });
-    $log.info('indexCtrl loaded.');
+
+    $log.log('%c indexCtrl loaded.', 'color: #c0c0c0');
   }])
   
   /*
@@ -306,7 +341,7 @@ angular.module('tipot.controllers', [])
     }
 
 
-    $log.info('bibCtrl loaded.');
+    $log.log('%c bibCtrl loaded.', 'color: #c0c0c0');
   }])
   /*
     driveCtrl
