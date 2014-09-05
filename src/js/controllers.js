@@ -126,8 +126,8 @@ angular.module('tipot.controllers', [])
               type = "html";
             else if(title == "style.css")
               type = "css";
-            else if(title == "bibliography")
-              type = "bibtex";
+            //else if(title == "bibliography")
+            //  type = "bibtex";
 
             switch(type) {
               case "bibtex":

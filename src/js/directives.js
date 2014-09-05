@@ -43,8 +43,8 @@ angular.module('tipot.directives', [])
             });
           } else if(scope.file.type == "html"){
             element.text('...');
-            GoogleApiFactory.getText(scope.file.id).then(function(res){
-              element.html(res.data);
+            GoogleApiFactory.getView(scope.file.id).then(function(res){
+              console.log(arguments);
             });
           } else  {
             gapi.client.drive.files.get({
