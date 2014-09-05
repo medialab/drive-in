@@ -19,6 +19,7 @@ angular.module('tipot.controllers', [])
     $scope.status = 'ciao';
     $scope.title = settings.title;
     $scope.sections = [];
+    $scope.folders = [];// menu entries
     
     $scope.setSections = function(folders) {
       $scope.sections = folders;
@@ -106,10 +107,21 @@ angular.module('tipot.controllers', [])
                         return d.img.alt; // et oui monsieur
                       }),
               id = item.id.substring(6);
+          // add folders
           if(type === undefined) {
+            var slugs = folders.map(function(d){return d.slug}), // slug of previous folders
+                slug  = slugify(title.text),
+                c = 0;
+
+            while(slugs.indexOf(slug) != -1) {
+              c++;
+              slug = slugify(title.text + ' ' + c);
+            };
+             
             // this is a real subfolder babe ...
             folders.push({
               title: title.text,
+              slug: slug,
               id: id
             });
             sections.push({
@@ -200,8 +212,9 @@ angular.module('tipot.controllers', [])
     }; // end of grab funct
     
     
-    $scope.folders = [];
+    
     /*
+      Load Default folder (cfr. settings.js)
       How to get google drive folder content without being trapped by authorization
     */
     $rootScope.$on(GOOGLE_API_LOADED, function(){
@@ -407,11 +420,18 @@ angular.module('tipot.controllers', [])
     $scope.pageIsReady = false; // every time we reload the page
 
     $scope.sync = function(){
+      var folderIndex = $scope.folders
+            .map(function(d){return d.slug})
+            .indexOf($routeParams.id),
+          pageId = folderIndex != -1 ? $scope.folders[folderIndex].id: $routeParams.id;
+
+      $log.debug('pageCtrl.sync, $routeParams.id', $routeParams.id, 'mapped to', pageId);
+      // reset files
       $scope.files = [];
       
-      var t = $scope.grab($routeParams.id, function(results) {
+      var t = $scope.grab(pageId, function(results) {
         $scope.pageIsReady = true;
-        console.log('grabbing', results, $routeParams.id)
+        console.log('grabbing', results, pageId)
         $scope.files = results.files;
         
       });

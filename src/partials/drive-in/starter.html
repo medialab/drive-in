@@ -1,7 +1,18 @@
-<h1>Welcome to drive-in</h1>
-<div ng-if="ready">
+<h1>Test drive for drive-in</h1>
+<div ng-show="ready">
   <label><em>sharing url</em> for a google drive <strong>public</strong> folder</label>
-  <input type="url" ng-model="folderUrl"/>
-  {{folderUrl}}
+  <input ng-required ng-pattern="/https:\/\/drive.google.com\/folderview\?id\=[A-Za-z\d]+.*/" type="url" ng-model="folderUrl"/>
+  
+  <div ng-if="folderId">
+    Everything seems fine.
+    <a  href="#/drive-in/{{folderId}}">View public folder</a>
+  </div>
 </div>
-<div ng-if="!ready">loading...</div>
+<div ng-show="!ready">
+  <div class="spinner">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+  </div>
+  loading...
+</div>

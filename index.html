@@ -27,8 +27,6 @@
     }
 
     ul li{
-      font-size: 12px;
-      line-height: 18px;
       color: #888;
     }
 
@@ -39,7 +37,7 @@
 
     ul li.menu-item{
       padding-left: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       cursor: pointer;
     }
     ul li.menu-item:hover a{
@@ -53,7 +51,6 @@
       width: 228px;
       position: fixed;
       top:0;
-      background: #f8f8f8;
       height: 100%;
     }
 
@@ -98,7 +95,7 @@
             <a href="#/">index</a>
           </li> <!-- home folder -->
           <li class="menu-item" ng-repeat="folder in folders">
-            <a href="#/{{folder.id}}">{{folder.title|cut:true:50}}</a>
+            <a href="#/{{folder.slug}}">{{folder.title|cut:true:50}}</a>
           </li>
           <li>&nbsp;</li>
           <li class="menu-item" ng-repeat="section in sections">

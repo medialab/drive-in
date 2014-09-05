@@ -42,10 +42,10 @@ angular.module('tipot.directives', [])
               // scroll to current bookmark if it has been found on page...
             });
           } else if(scope.file.type == "html"){
-            element.text('...');
-            GoogleApiFactory.getView(scope.file.id).then(function(res){
+            element.text('...'); // very public folder ONLY
+            /*GoogleApiFactory.getView(scope.file.id).then(function(res){
               console.log(arguments);
-            });
+            });*/
           } else  {
             gapi.client.drive.files.get({
               'fileId': scope.file.id
