@@ -3,6 +3,7 @@
 var GOOGLE_CLIENT_INITIALIZED = 'GOOGLE_CLIENT_INITIALIZED',
     GOOGLE_API_LOADED = 'GOOGLE_API_LOADED',
     GOOGLE_DEFAULT_FOLDER_LOADED = 'GOOGLE_DEFAULT_FOLDER_LOADED',
+
     GOOGLE_LOAD_FILE = 'GOOGLE_LOAD_FILE';
 
 
@@ -12,13 +13,16 @@ angular.module('tipot.controllers', [])
     The very main controller. 
     ===
   */
-  .controller('layoutCtrl', ['$scope', '$rootScope', '$log', 'YqlFactory', function($scope, $rootScope, $log, YqlFactory) {
+  .controller('layoutCtrl', ['$scope', '$rootScope', '$log', '$location', '$routeParams', '$anchorScroll', 'YqlFactory', function($scope, $rootScope, $log, $location, $routeParams, $anchorScroll, YqlFactory) {
 
     $scope.items = {};
     $scope.status = 'ciao';
     $scope.title = settings.title;
-
+    $scope.sections = [];
     
+    $scope.setSections = function(folders) {
+      $scope.sections = folders;
+    }
 
     $scope.lazyLoad = function(file) {
       console.log('ehi, loading this', fileId);
@@ -30,6 +34,12 @@ angular.module('tipot.controllers', [])
       console.log(gapi)
       alert(fileId);
     });
+
+    $scope.path = '';
+    
+
+    
+
     /*
       This simple function return the callback(object) of the object having the key=value
     */
@@ -61,6 +71,7 @@ angular.module('tipot.controllers', [])
     $scope.grab = function(folderId, callback) {
       var files = [],
           folders = [],
+          sections = [],
           bibliography =[], // entries from a specific bib file!!!
           styles =[]; // list of stylesheet to be applied
 
@@ -74,13 +85,22 @@ angular.module('tipot.controllers', [])
         if(!res.query.results) {
           $log.error("probably you didn't share the google folder, did you?");
           $log.info("received", res);
-          return
+          return callback({
+            files: files,
+            folders: folders,
+            styles: styles,
+            sections: sections,
+            bibliography: bibliography,
+          });;
         }
         console.log(folderId, res.query.results.div.length);
         
         function structure(item) {
           var title = lookFor(item, 'class', 'flip-entry-title', function(d){
-                        return d.p.split(/^\d+\s/).pop();
+                        return {
+                          text: d.p.replace(/\([^\)]*\)/g, '').split(/^\d+\s/).pop(),
+                          raw: d.p
+                        };
                       }),
               type = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.alt; // et oui monsieur
@@ -89,23 +109,30 @@ angular.module('tipot.controllers', [])
           if(type === undefined) {
             // this is a real subfolder babe ...
             folders.push({
-              title: title,
+              title: title.text,
+              id: id
+            });
+            sections.push({
+              title: title.text,
+              sort: title.raw,
               id: id
             });
           } else {
             var src = lookFor(item, 'class', 'flip-entry-thumb', function(d){
                         return d.img.src.split(/=s\d+$/).shift();
                       });
-            
-            if(title=="style.css")
-              type="css";
-            else if(title == "bibliography")
-              type="bibtex";
+            // type assignation based on file naming 
+            if(title.text && title.text.match(/\.html$/))
+              type = "html";
+            else if(title == "style.css")
+              type = "css";
+            //else if(title == "bibliography")
+            //  type = "bibtex";
 
-            switch(title, type) {
+            switch(type) {
               case "bibtex":
                 bibliography.push({
-                  title: title,
+                  title: title.text,
                   id: id,
                   type: type,
                   src: src
@@ -113,7 +140,7 @@ angular.module('tipot.controllers', [])
                 break;
               case "css":
                 styles.push({
-                  title: title,
+                  title: title.text,
                   id: id,
                   type: type,
                   src: src
@@ -123,15 +150,23 @@ angular.module('tipot.controllers', [])
               case "PNG Image":
               case "Photo":
                 files.push({
-                  title: title,
+                  title: title.text,
                   id: id,
                   type: 'image',
                   src: src
                 });
                 break;
+              case "Document":
+                sections.push({
+                  title: title.text,
+                  id: id,
+                  sort: title.raw,
+                  type: type,
+                  src: src
+                }); // and go on with default placement
               default:
                 files.push({
-                  title: title,
+                  title: title.text,
                   id: id,
                   type: type,
                   src: src
@@ -157,6 +192,7 @@ angular.module('tipot.controllers', [])
           files: files,
           folders: folders,
           styles: styles,
+          sections: sections,
           bibliography: bibliography,
         });
         //$scope.$apply();
@@ -169,7 +205,7 @@ angular.module('tipot.controllers', [])
       How to get google drive folder content without being trapped by authorization
     */
     $rootScope.$on(GOOGLE_API_LOADED, function(){
-      $log.info('layoutCtrl@GOOGLE_API_LOADED');
+      $log.debug('layoutCtrl @GOOGLE_API_LOADED');
         var t = $scope.grab(settings.defaultFolder, function(results) {
           $log.info('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
@@ -189,7 +225,32 @@ angular.module('tipot.controllers', [])
         });
     });
 
-    $log.info('layoutCtrl loaded.');
+
+    $rootScope.$on('$routeChangeSuccess', function(newRoute, oldRoute) {
+      $log.debug('layoutCtrl @$routeChangeSuccess', $location, $routeParams.bookmark? 'bookmark=' + $routeParams.bookmark:'');
+      $rootScope.path = '/#' + $location.path();
+      $rootScope.bookmark = $routeParams.bookmark;
+    });
+
+
+    $rootScope.$on('$routeUpdate', function() {
+      $log.debug('layoutCtrl @$routeUpdate', arguments);
+      $rootScope.bookmark = $routeParams.bookmark; // try to scroll to, hopeing with success...
+      $rootScope.anchoring();
+    });
+
+    /*
+      #function anchoring
+      Scroll to $rootScope.bookmark anchor inside current VIEW, according to its content. This function have to be available for our `file` directive (cfr. directives.js)
+    */
+    $rootScope.anchoring = function() {
+      $location.hash($rootScope.bookmark);
+      $anchorScroll();
+      $location.hash('d');
+    };
+
+
+    $log.log('%c layoutCtrl loaded.', 'color: #c0c0c0');
   }])
   
   
@@ -210,7 +271,7 @@ angular.module('tipot.controllers', [])
 
     $scope.$on(GOOGLE_CLIENT_INITIALIZED, function(e, settings){
 
-      $log.info('starterCtrl@GOOGLE_CLIENT_INITIALIZED, api key received: ', settings.apiKey);
+      $log.debug('starterCtrl @GOOGLE_CLIENT_INITIALIZED, api key received: ', settings.apiKey);
       gapi.client.setApiKey(settings.apiKey);
       gapi.client.load('drive', 'v2', function(){
         $rootScope.$emit(GOOGLE_API_LOADED);
@@ -218,12 +279,33 @@ angular.module('tipot.controllers', [])
     });
 
 
-    $log.info('starterCtrl loaded.');
+    $log.log('%c starterCtrl loaded.', 'color: #c0c0c0');
   }])
 
-  .controller('indexCtrl', ['$log', function($log) {
 
-    $log.info('indexCtrl loaded.');
+  /*
+
+    INDEX
+    =====
+    Main page controller.
+
+  */
+  .controller('indexCtrl', ['$log', '$scope', function($log, $scope) {
+    $scope.folderUrl = '';// test if folderURl is a valid one. If yes, fill the folderId dir var
+    $scope.folderId = '';
+
+    $scope.setSections([]);
+
+    $scope.$watch('folderUrl', function(v){
+      if(!v)
+        return;
+
+      var candidate = v.match(/[A-Za-z0-9_]{12,}/);
+      if(candidate)
+        $scope.folderId = candidate.pop();
+    });
+
+    $log.log('%c indexCtrl loaded.', 'color: #c0c0c0');
   }])
   
   /*
@@ -259,7 +341,7 @@ angular.module('tipot.controllers', [])
     }
 
 
-    $log.info('bibCtrl loaded.');
+    $log.log('%c bibCtrl loaded.', 'color: #c0c0c0');
   }])
   /*
     driveCtrl
@@ -283,16 +365,28 @@ angular.module('tipot.controllers', [])
         $scope.grab($routeParams.folderId, function(results) {
           $log.info('grabbing', results, $routeParams.folderId)
           $scope.files = results.files;
-          $scope.folders = results.folders;
+          $scope.sections = $scope.setSections(results.sections);
+
+
 
           $scope.bibliography = results.bibliography;
 
           $scope.driveIsReady = true;
         });
       }
-    }
+    };
 
-    $rootScope.$on(GOOGLE_DEFAULT_FOLDER_LOADED, $scope.sync);
+
+
+
+    
+    if($rootScope.ready){ 
+      $log.info("everything is ready, we're already loaded the default folder.");
+      $scope.sync();
+    } else {
+      $rootScope.$on(GOOGLE_DEFAULT_FOLDER_LOADED, $scope.sync);
+
+    }
     
     $log.info('driveCtrl loaded.');
   }])
@@ -310,12 +404,16 @@ angular.module('tipot.controllers', [])
   */
   .controller('pageCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
     $scope.files = [];
+    $scope.pageIsReady = false; // every time we reload the page
 
     $scope.sync = function(){
       $scope.files = [];
+      
       var t = $scope.grab($routeParams.id, function(results) {
+        $scope.pageIsReady = true;
         console.log('grabbing', results, $routeParams.id)
         $scope.files = results.files;
+        
       });
     }
     // FIRST PAGE CTRL LOAD owaiting for the menu to be completed... then check if the folder is under the tree...
