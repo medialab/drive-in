@@ -3,6 +3,19 @@ body {
   color: #555;
 }
 
+sidebar ul li.menu-item a {
+  transition: color .3s ease-in-out;
+  -webkit-transition: color .3s ease-in-out;
+}
+
+sidebar ul li.menu-item:hover a{
+  color: #cc1600;
+}
+
+sidebar ul li.menu-item.selected a{
+  color: #181818;
+}
+
 label {
   display: block;
   margin-bottom: 0.4em;

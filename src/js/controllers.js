@@ -20,7 +20,9 @@ angular.module('tipot.controllers', [])
     $scope.title = settings.title;
     $scope.sections = [];
     $scope.folders = [];// menu entries
-    
+    $scope.page = ''; // current page
+
+
     $scope.setSections = function(folders) {
       $scope.sections = folders;
     }
@@ -317,6 +319,7 @@ angular.module('tipot.controllers', [])
       if(candidate)
         $scope.folderId = candidate.pop();
     });
+    $scope.$parent.page = 'index';
 
     $log.log('%c indexCtrl loaded.', 'color: #c0c0c0');
   }])
@@ -413,6 +416,10 @@ angular.module('tipot.controllers', [])
     $log.info('drivePageCtrl loaded.');
   }])
   /*
+
+    PageCtrl
+    ========
+  
     This special controller handle the basic view.
   */
   .controller('pageCtrl', ['$scope', '$rootScope', '$log', '$routeParams', function($scope, $rootScope, $log, $routeParams) {
@@ -425,13 +432,15 @@ angular.module('tipot.controllers', [])
             .indexOf($routeParams.id),
           pageId = folderIndex != -1 ? $scope.folders[folderIndex].id: $routeParams.id;
 
-      $log.debug('pageCtrl.sync, $routeParams.id', $routeParams.id, 'mapped to', pageId);
+      $log.log('pageCtrl.sync, $routeParams.id', $routeParams.id, 'mapped to', pageId);
       // reset files
       $scope.files = [];
       
       var t = $scope.grab(pageId, function(results) {
         $scope.pageIsReady = true;
-        console.log('grabbing', results, pageId)
+        $scope.$parent.page = pageId; // layoutCtrl page var
+
+        console.log('grabbing', results, pageId);
         $scope.files = results.files;
         
       });
@@ -448,5 +457,5 @@ angular.module('tipot.controllers', [])
       $scope.sync();
     }
     
-    $log.info('pageCtrl loaded.');
+    $log.log('%c pageCtrl loaded.', 'color: #c0c0c0');
   }])

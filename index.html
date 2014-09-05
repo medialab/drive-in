@@ -40,12 +40,7 @@
       margin-bottom: 18px;
       cursor: pointer;
     }
-    ul li.menu-item:hover a{
-      color: #000;
-    }
-    ul li.menu-item.selected a{
-      color: #181818;
-    }
+    
 
     sidebar{
       width: 228px;
@@ -90,11 +85,11 @@
       <sidebar>
         <ul>
           <li><h1>{{title}}</h1></li>
-          <!-- {{folders}} -->
-          <li class="selected menu-item">
+          
+          <li class="menu-item" ng-class="page == 'index'? 'selected':''">
             <a href="#/">index</a>
           </li> <!-- home folder -->
-          <li class="menu-item" ng-repeat="folder in folders">
+          <li class="menu-item" ng-repeat="folder in folders" ng-class="folder.id == page? 'selected':''">
             <a href="#/{{folder.slug}}">{{folder.title|cut:true:50}}</a>
           </li>
           <li>&nbsp;</li>
