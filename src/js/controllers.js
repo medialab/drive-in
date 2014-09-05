@@ -76,7 +76,8 @@ angular.module('tipot.controllers', [])
           folders = [],
           sections = [],
           bibliography =[], // entries from a specific bib file!!!
-          styles =[]; // list of stylesheet to be applied
+          styles =[],
+          scripts = []; // list of stylesheet to be applied
 
       console.log('select * from html where url="' + settings.baseUrl + folderId + '" and xpath=\'//div[@class="flip-entry"]\'')
       return YqlFactory.get({
@@ -92,12 +93,13 @@ angular.module('tipot.controllers', [])
             files: files,
             folders: folders,
             styles: styles,
+            scripts: scripts,
             sections: sections,
             bibliography: bibliography,
           });;
         }
         console.log(folderId, res.query.results.div.length);
-        
+        // folderId param allow to link css and js files...
         function structure(item) {
           var title = lookFor(item, 'class', 'flip-entry-title', function(d){
                         return {
@@ -138,8 +140,10 @@ angular.module('tipot.controllers', [])
             // type assignation based on file naming 
             if(title.text && title.text.match(/\.html$/))
               type = "html";
-            else if(title == "style.css")
+            else if(title.text && title.text.match(/\.css$/))
               type = "css";
+            else if(title.text && title.text.match(/\.js$/))
+              type = "js";
             //else if(title == "bibliography")
             //  type = "bibtex";
 
@@ -157,7 +161,15 @@ angular.module('tipot.controllers', [])
                   title: title.text,
                   id: id,
                   type: type,
-                  src: src
+                  src: settings.hostUrl + folderId + '/' + title.text
+                });
+                break;
+              case "js":
+                scripts.push({
+                  title: title.text,
+                  id: id,
+                  type: type,
+                  src: settings.hostUrl + folderId + '/' + title.text
                 });
                 break;
               case "JPEG Image":
@@ -206,6 +218,7 @@ angular.module('tipot.controllers', [])
           files: files,
           folders: folders,
           styles: styles,
+          scripts: scripts,
           sections: sections,
           bibliography: bibliography,
         });
@@ -213,8 +226,43 @@ angular.module('tipot.controllers', [])
       });
     }; // end of grab funct
     
-    
-    
+    /*
+      Inject stylesheet directly from $scope.styles ...
+    */
+    $scope.$watch('styles', function(){
+      if(!$scope.styles || !$scope.styles.length) {
+        $('head [data-driveincss]').remove();
+        return;
+      }
+      var stylesheets = [];
+      // remove previuos styles
+      
+
+      for(var i in $scope.styles){
+        stylesheets.push('<link rel="stylesheet" data-driveincss type="text/css" href="'+$scope.styles[i].src+'">');
+      }
+
+      $('head').append(stylesheets.join(''));
+    });
+
+
+    $scope.$watch('scripts', function(){
+      if(!$scope.scripts || !$scope.scripts.length) {
+        $('body [data-driveinjs]').remove();
+        return;
+      }
+      var scripts = [];
+      // remove previuos styles
+      $('body [data-driveinjs]').remove();
+
+      for(var i in $scope.scripts){
+        scripts.push('<script data-driveinjs type="text/javascript" src="'+$scope.scripts[i].src+'">');
+      }
+
+      $('body').append(scripts.join(''));
+    });
+
+
     /*
       Load Default folder (cfr. settings.js)
       How to get google drive folder content without being trapped by authorization
@@ -225,16 +273,7 @@ angular.module('tipot.controllers', [])
           $log.info('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
           $scope.folders = results.folders;
-
           $scope.bibliography = results.bibliography;
-          
-          /* inject javascript, todo
-          for( var s in results.styles) {
-            alert('aosdpaodpod');
-            $('head').append('<link rel="stylesheet" href="' + results.styles[s].src +'" type="text/css" />');
-          };
-          */
-
           $rootScope.ready = true;
           $rootScope.$emit(GOOGLE_DEFAULT_FOLDER_LOADED);
         });
@@ -438,7 +477,11 @@ angular.module('tipot.controllers', [])
       
       var t = $scope.grab(pageId, function(results) {
         $scope.pageIsReady = true;
+        
         $scope.$parent.page = pageId; // layoutCtrl page var
+        
+        $scope.$parent.styles = results.styles;
+        $scope.$parent.scripts = results.scripts;
 
         console.log('grabbing', results, pageId);
         $scope.files = results.files;

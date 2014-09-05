@@ -4,6 +4,7 @@
 */
 var settings = {
   baseUrl: 'https://drive.google.com/folderview?id=', // the google drive sharing base url
+  hostUrl: 'https://googledrive.com/host/',// 0ByZTyEnzm9qqdGN5MGpQaWJCMXc/Untitled.css
   partials:'src/partials' // __relative__ basefolder URL for angular partials tamplates
 };
 
