@@ -172,6 +172,14 @@ angular.module('tipot.controllers', [])
                   src: settings.hostUrl + folderId + '/' + title.text
                 });
                 break;
+              case "html":
+                files.push({
+                  title: title.text,
+                  id: id,
+                  type: type,
+                  src: settings.hostUrl + folderId + '/' + title.text
+                });
+                break;
               case "JPEG Image":
               case "PNG Image":
               case "Photo":
@@ -273,6 +281,8 @@ angular.module('tipot.controllers', [])
           $log.info('grabbing', results, settings.defaultFolder)
           $scope.files = results.files;
           $scope.folders = results.folders;
+          $scope.scripts = results.scripts;
+          $scope.styles = results.styles;
           $scope.bibliography = results.bibliography;
           $rootScope.ready = true;
           $rootScope.$emit(GOOGLE_DEFAULT_FOLDER_LOADED);
@@ -335,7 +345,6 @@ angular.module('tipot.controllers', [])
 
     $log.log('%c starterCtrl loaded.', 'color: #c0c0c0');
   }])
-
 
   /*
 
@@ -421,19 +430,11 @@ angular.module('tipot.controllers', [])
           $log.info('grabbing', results, $routeParams.folderId)
           $scope.files = results.files;
           $scope.sections = $scope.setSections(results.sections);
-
-
-
           $scope.bibliography = results.bibliography;
-
           $scope.driveIsReady = true;
         });
       }
     };
-
-
-
-
     
     if($rootScope.ready){ 
       $log.info("everything is ready, we're already loaded the default folder.");
@@ -454,6 +455,7 @@ angular.module('tipot.controllers', [])
     
     $log.info('drivePageCtrl loaded.');
   }])
+
   /*
 
     PageCtrl
