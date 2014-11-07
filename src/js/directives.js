@@ -41,10 +41,11 @@ angular.module('tipot.directives', [])
 
               // scroll to current bookmark if it has been found on page...
             });
-          } else if(scope.file.type == "html"){
+          } else if(scope.file.type == "html"){ // 
             element.text('...');
-            GoogleApiFactory.getView(scope.file.id).then(function(res){
-              console.log(arguments);
+            GoogleApiFactory.getSource(scope.file.src).then(function(res){
+              //console.log(scope.file);
+              element.html(res.data);
             });
           } else  {
             gapi.client.drive.files.get({
