@@ -43,9 +43,9 @@ angular.module('tipot.directives', [])
             });
           } else if(scope.file.type == "html"){
             element.text('...');
-            GoogleApiFactory.getView(scope.file.id).then(function(res){
-              console.log(arguments);
-            });
+            //GoogleApiFactory.getView(scope.file.id).then(function(res){
+            //  console.log(arguments);
+            //});
           } else  {
             gapi.client.drive.files.get({
               'fileId': scope.file.id

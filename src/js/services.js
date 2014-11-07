@@ -4,7 +4,7 @@
 angular.module('tipot.services', ['ngResource' ])//'ngAnimate'])
   
   .factory('YqlFactory', function($resource) {
-    return $resource('https://query.yahooapis.com/v1/public/yql', {}, {});
+    return $resource('https://yql.yahooapis.com/v1/public/yql', {}, {});
   })
 
   .factory('GoogleApiFactory', function($http) {
