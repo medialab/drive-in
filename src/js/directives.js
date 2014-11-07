@@ -43,10 +43,10 @@ angular.module('tipot.directives', [])
             });
           } else if(scope.file.type == "html"){ // 
             element.text('...');
-            GoogleApiFactory.getSource(scope.file.src).then(function(res){
+            //GoogleApiFactory.getSource(scope.file.src).then(function(res){
               //console.log(scope.file);
-              element.html(res.data);
-            });
+            //  element.html(res.data);
+            //});
           } else  {
             gapi.client.drive.files.get({
               'fileId': scope.file.id
