@@ -1,25 +1,25 @@
 drive-in
 ========
 
-publish a simple website from a public google drive folder without coding in HTML.
+publish a simple website from a _public_ google drive folder without coding in HTML.
 Only some [markdown syntax](http://daringfireball.net/projects/markdown/syntax) are required for __bod__ or _italic_
 Everythiong else is driven by googledocs!
 
 
 #### advanced usages
-To be used in conjunction with [editey](http://www.editey.com/) which allow you to comment and edit collaboratively on every pieces of code!
+You can use drive-in in conjunction with [editey](http://www.editey.com/) in order to work directly with html files - with google drive realtime comments and edits. If you decide to use html and personal css files, you must set the folder permission to "publicly visible on the web". 
 
 ## How to install: 30 sec. installation
+Drive-in show in a "one page" manner the files and the subfolders of one (public) google drive folder.
+Drive-in generates _menu entries_ from the subfolders list and simply print on screen the google docs contents as html respecting the alphabetic ordering.
 
-Drive-in uses just one (public) folder as website root and generates a one-level structure of subfolders as _menu entries_.
-
-Apply for a google public API key, clone the project, copy the file [settings.sample.js](http://) into [settings.js](http://example.com/ ) and modify it according to your need...
+Apply for a google public API key, clone the project, copy the file [settings.sample.js](http://) into [settings.js](http://example.com/ ) and modify it according to your needs...
 Voila the default settings :
 	
 	'use strict';
 
 	var settings = {
-  		baseUrl: 'https://drive.google.com/folderview?id='// the google drive sharing base url
+  		baseUrl: 'https://drive.google.com/folderview?id='// the google drive sharing base url that you do not need to change
 	};
 
 	/*

@@ -13,6 +13,10 @@ angular.module('tipot.directives', [])
         link: function(scope, element, attrs) {
           $log.debug('[directive] lazyFile', scope.file.title, scope.file.type, scope.file.id);
           
+          scope.fa = function() {
+            alert('test');
+          };
+          
           element.text('.');//loading
           
           if(scope.file.type == "Document"){
@@ -42,10 +46,12 @@ angular.module('tipot.directives', [])
               // scroll to current bookmark if it has been found on page...
             });
           } else if(scope.file.type == "html"){
-            element.text('...');
-            //GoogleApiFactory.getView(scope.file.id).then(function(res){
-            //  console.log(arguments);
-            //});
+            element.text('...'); // very public folder ONLY
+            GoogleApiFactory.getSource(scope.file.src).then(function(res){
+              //console.log(arguments);
+              element.html(res.data);
+            });
+
           } else  {
             gapi.client.drive.files.get({
               'fileId': scope.file.id

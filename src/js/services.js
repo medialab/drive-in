@@ -14,6 +14,9 @@ angular.module('tipot.services', ['ngResource' ])//'ngAnimate'])
       },
       getText: function(id) {
         return $http.get('https://docs.google.com/feeds/download/documents/export/Export?id='+id+'&exportFormat=txt')
+      },
+      getSource: function(src) {
+        return $http.get(src);
       }
     }
   })

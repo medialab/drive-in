@@ -27,8 +27,6 @@
     }
 
     ul li{
-      font-size: 12px;
-      line-height: 18px;
       color: #888;
     }
 
@@ -39,21 +37,15 @@
 
     ul li.menu-item{
       padding-left: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       cursor: pointer;
     }
-    ul li.menu-item:hover a{
-      color: #000;
-    }
-    ul li.menu-item.selected a{
-      color: #181818;
-    }
+    
 
     sidebar{
       width: 228px;
       position: fixed;
       top:0;
-      background: #f8f8f8;
       height: 100%;
     }
 
@@ -93,12 +85,12 @@
       <sidebar>
         <ul>
           <li><h1>{{title}}</h1></li>
-          <!-- {{folders}} -->
-          <li class="selected menu-item">
+          
+          <li class="menu-item" ng-class="page == 'index'? 'selected':''">
             <a href="#/">index</a>
           </li> <!-- home folder -->
-          <li class="menu-item" ng-repeat="folder in folders">
-            <a href="#/{{folder.id}}">{{folder.title|cut:true:50}}</a>
+          <li class="menu-item" ng-repeat="folder in folders" ng-class="folder.id == page? 'selected':''">
+            <a href="#/{{folder.slug}}">{{folder.title|cut:true:50}}</a>
           </li>
           <li>&nbsp;</li>
           <li class="menu-item" ng-repeat="section in sections">
@@ -115,12 +107,11 @@
           </li>
         </ul>
       </sidebar>
-
       <div id="wrapper" ng-view></div> <!-- cfr app.js and templates are under src/partials -->
     </div>
     
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-    
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <!--
 
         bibtext/markdown interpreters

@@ -1,22 +1,12 @@
-<h1>Test drive</h1>
-<div ng-show="ready">
-  <label><em>sharing url</em> for a google drive <strong>public</strong> folder</label>
-  <input ng-required ng-pattern="/https:\/\/drive.google.com\/folderview\?id\=[A-Za-z\d]+.*/" type="url" ng-model="folderUrl"/>
-  
-  <div ng-if="folderId">
-    Everything seems fine.
-    <a  href="#/drive-in/{{folderId}}">View public folder</a>
-  </div>
-</div>
+
 <div ng-show="!ready">
   <div class="spinner">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
     <div class="bounce3"></div>
   </div>
-  loading...</div>
+  loading...
+</div>
 
 <!-- {{files}} -->
-<div class="spacer"></div>
-
 <div class="file" ng-repeat="file in files" ng-include="'src/partials/file.html'"></div>
