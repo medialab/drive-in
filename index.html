@@ -46,7 +46,15 @@
                 </li>
               </ul>
             </nav -->
-            
+            <div id="login" ng-if="app_status == 'APP_STATUS_AUTHORIZATION_REQUIRED'">
+              <h2>login with your google account</h2>
+              Note that if the google drive-folder specified
+              it is not "public" it should be shared with your google account!
+
+              <button ng-click="authorize()">authorize drive-in
+
+              </button>
+            </div>
             <div class="page" ng-view>
             </div>
             
