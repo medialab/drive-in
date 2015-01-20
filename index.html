@@ -3,6 +3,7 @@
 
   <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link href='src/css/style.css' rel='stylesheet' type='text/css'>
 
     <script src="settings.js"></script>
@@ -48,12 +49,14 @@
             </nav -->
             <div id="login" ng-if="app_status == 'APP_STATUS_AUTHORIZATION_REQUIRED'">
               <h2>login with your google account</h2>
-              Note that if the google drive-folder specified
+              <p>
+                Note that if the google drive-folder specified
               it is not "public" it should be shared with your google account!
-
-              <button ng-click="authorize()">authorize drive-in
+              </p>
+              <button class="btn btn-primary" ng-click="authorize()">authorize drive-in
 
               </button>
+              
             </div>
             <div class="page" ng-view>
             </div>
