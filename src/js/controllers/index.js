@@ -64,7 +64,19 @@ angular.module('drivein')
 
       // for each section, save the world
       Q.find('h1').each(function(i, el) {
-        var contents = '<p>' + $(this).nextUntil('h1').get().map(function(e) {return $(e).html()}).join('<p></p>') + '</p>', // html specific to this section
+        var contents = $(this).nextUntil('h1').get().map(function(e) {
+              var el = $(e);
+
+              el.find('img').each(function() {
+                var img = $(this);
+                img.replaceWith($('<div/>',{'class': 'image'}).append(
+                  '<img src="'+img.attr('src')+'" alt="alternative text"/><div class="caption">'+img.attr('title')+'</div><div class="reference">'+img.attr('alt')+'</div>'
+                ));
+              });
+
+              console.log(e.tagName);
+              return '<' + e.tagName.toLowerCase() + '>' + el.html() + '</' + e.tagName.toLowerCase() +'>';
+            }).join(''), // html specific to this section
             section = {
               title: $(this).text(),
               html: clean(contents), // demander à guillaume
@@ -73,9 +85,11 @@ angular.module('drivein')
             //nextUntil('h1')
         
         // split section if an image was found
-
-
-        section.html = clean(contents);
+        /*J.find('img').each(function(e, el) {
+          var el = $(this);
+          // clean alt and title
+          
+        });*/
 
         result.sections.push(section);
       });
