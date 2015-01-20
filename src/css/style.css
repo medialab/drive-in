@@ -1,149 +1,112 @@
 body {
-  font: 14px/1.4375 'Helvetica Neue', sans-serif;
-  color: #555;
+  font: 15px/25px 'Open sans', sans-serif;
+  color: #1d1d1d;
+  
 }
 
-sidebar ul li.menu-item a {
-  transition: color .3s ease-in-out;
-  -webkit-transition: color .3s ease-in-out;
-}
-
-sidebar ul li.menu-item:hover a{
-  color: #cc1600;
-}
-
-sidebar ul li.menu-item.selected a{
-  color: #181818;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.4em;
-}
-
-input {
-  width: 480px;
-  font: 1em/1em 'Helvetica Neue', sans-serif;
-  padding: 0.4em;
-  border: 1px solid #ababab;
-  transition: border-color .3s ease-in-out;
-}
-
-input:focus {
-  outline: none;
-  border-bottom: 1px solid #000;
-}
-
-input.ng-invalid-pattern {
-  border-bottom: 1px solid red;
-}
-
-h1 {
+*{
+  padding: 0;
   margin: 0;
-  color: #000;
-  font: 2rem/1.4375em 'Helvetica Neue';
-  font-weight: normal;
 }
 
-h2 {
+ul, li{
+  list-style-type: none;
   margin: 0;
-  font: 1rem/1.4375em 'Helvetica Neue';
-  font-weight: normal;
+  padding: 0;
 }
 
-
-
-#wrapper span, #wrapper img{
-  max-width: 100%;
+aside{
+  position: fixed;
+  top: 0;
+  left:0;
+  bottom: 0;
+  width: 230px;
+  
 }
 
-p {
-  font: 1rem/1.4375rem georgia,"times new roman",times,serif;
-  font-weight: normal;
-  margin: 0 0 0.718em 0;
-}
-
-img{
-  display: block;
-}
-
-.caption{
-  padding: 10px;
-  background: #f7f7f7;
-}
-
-h2.filename{ /* filetitles */
-  color: #999;
-  border-bottom: 1px solid #f0f0f0;
-  padding: 0 0 1.2em 0;
-  margin: 0 0 1.4375em 0;
-  font-weight: normal;
-  font-size: 1em;
-  /* text-align: center; */
-  text-transform: lowercase;
-  font-style: italic;
-}
-
-.file {
-  margin-bottom: 1.4375em;
-}
-
-.file h1{
-  color: #000;
-  font: 1.4rem/1.4375em 'Helvetica Neue';
-  font-weight: normal;
-  margin: 0 0 0.718em 0;
-}
-
-.spacer{
-  display:block;
-  height: 60px;
-}
-
-
-
-/* thanks to http://tobiasahlin.com/spinkit/ */
-.spinner {
-  margin: 0px auto 0;
-  width: 70px;
-  text-align: center;
-}
-
-.spinner > div {
-  width: 18px;
-  height: 18px;
-  background-color: #333;
-
-  border-radius: 100%;
+aside h1{
+  margin: 30px;
+  /*background-color: #1d1d1d;*/
   display: inline-block;
-  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
-  animation: bouncedelay 1.4s infinite ease-in-out;
-  /* Prevent first frame from flickering when animation starts */
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+  /*color: white;*/
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: bold;
+  padding: 0 10px;
 }
 
-.spinner .bounce1 {
-  -webkit-animation-delay: -0.32s;
-  animation-delay: -0.32s;
+h1,h2,h3,h4,h5{
+  font-size: 1em;
 }
 
-.spinner .bounce2 {
-  -webkit-animation-delay: -0.16s;
-  animation-delay: -0.16s;
+aside ul{
+  margin: 0 30px;
 }
 
-@-webkit-keyframes bouncedelay {
-  0%, 80%, 100% { -webkit-transform: scale(0.0) }
-  40% { -webkit-transform: scale(1.0) }
+aside li{
+  margin: 10px;
 }
 
-@keyframes bouncedelay {
-  0%, 80%, 100% { 
-    transform: scale(0.0);
-    -webkit-transform: scale(0.0);
-  } 40% { 
-    transform: scale(1.0);
-    -webkit-transform: scale(1.0);
-  }
+aside li.selected a{
+  background: #f5f5f5;
+}
+
+a{
+  text-decoration: underline;
+  color: crimson;
+}
+
+a:hover{
+  color: crimson;
+  /*border-bottom: 1px solid;*/
+}
+
+
+#wrapper{
+  width: 100%;
+  margin: 0;
+}
+
+#wrapper>.inner{
+  margin: 0 50px 0 250px;
+
+}
+
+.gdoc{
+  margin: 50px 0 20px 0px;
+  overflow: hidden;
+}
+
+.gdoc h2{
+  font-size: 20px;
+  line-height: 30px;
+  margin-bottom: 20px;
+}
+.gdoc h2, .gdoc .subtitle, .gdoc .contents{
+  margin-right: 170px;
+}
+
+.gdoc .subtitle{
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.gdoc section{
+  position: relative;
+  min-height: 100px;
+}
+
+.gdoc section .summary{
+  position: absolute;
+  width: 150px;
+  top:0;
+  right: 0;
+  text-align: right;
+  font-size: 12px;
+  line-height:18px;
+
+}
+
+.gdoc img{
+  display: inline;
 }

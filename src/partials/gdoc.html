@@ -1,0 +1,11 @@
+<div class="gdoc">
+  <h2 ng-bind-html="title"></h2>
+  <div class="subtitle" ng-bind-html="subtitle"></div>
+  <div ng-bind-html="html"></div>
+  <section ng-repeat="section in sections">
+    <div class="contents" ng-bind-html="section.html"></div>
+    <div class="summary">{{section.title}}</div>
+    
+  </section>
+
+</div>

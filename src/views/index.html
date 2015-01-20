@@ -1,0 +1,9 @@
+
+<div ng-if="app_status == 'app_status_authorization_required'">
+  Click to authorize this app to access your personal drive
+  <button ng-click="authorize()">START</button>
+</div>
+
+<div ng-repeat="doc in docs">
+  <gdoc doc="doc" load="load(doc)">{{contents}}</gdoc>
+</div>

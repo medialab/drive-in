@@ -1,0 +1,19 @@
+{
+  "name": "drive-in",
+  "version": "0.0.0",
+  "description": "drive-in ========",
+  "main": "settings.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medialab/drive-in.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/medialab/drive-in/issues"
+  },
+  "homepage": "https://github.com/medialab/drive-in"
+}
