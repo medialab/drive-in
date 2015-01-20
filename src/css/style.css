@@ -15,25 +15,6 @@ ul, li{
   padding: 0;
 }
 
-aside{
-  position: fixed;
-  top: 0;
-  left:0;
-  bottom: 0;
-  width: 230px;
-  
-}
-
-aside h1{
-  margin: 30px;
-  /*background-color: #1d1d1d;*/
-  display: inline-block;
-  /*color: white;*/
-  font-size: 15px;
-  line-height: 30px;
-  font-weight: bold;
-  padding: 0 10px;
-}
 
 a{
   color: crimson;
@@ -41,6 +22,26 @@ a{
 
 a:hover{
   color:tomato;
+}
+
+
+aside{
+  position: fixed;
+  top: 0;
+  left:0;
+  bottom: 0;
+  width: 230px;
+}
+
+aside h1{
+  margin: 15px 30px 30px 30px;
+  /*background-color: #1d1d1d;*/
+  display: inline-block;
+  /*color: white;*/
+  font-size: 15px;
+  line-height: 30px;
+  font-weight: bold;
+  padding: 0 10px;
 }
 
 h1,h2,h3,h4,h5{
@@ -64,6 +65,25 @@ aside li a{
 aside li.selected a{
   color: #1d1d1d;
   text-decoration: underline;
+}
+
+nav{
+  position: fixed;
+  border-bottom: 1px solid #d1d1d1;
+  height: 60px;
+  top: 0;
+  left: 230px;
+  right: 50px;
+  max-width: 750px;
+  background: #fff;
+  z-index: 1;
+}
+
+nav h1{
+  line-height: 30px;
+  font-size: 15px;
+  margin: 15px 0 0 20px;
+  color: #999;
 }
 
 #login h2, #references h2{
