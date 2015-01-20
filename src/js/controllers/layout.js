@@ -126,6 +126,7 @@ angular.module('drivein')
       $log.info('layoutCtrl >>> executing', fileid);
       request.execute(function(res) { // analyse folder 
         var queue   = [], // queue of $http requests for each bibtext or for wach document
+            references = [],
             bibtexs = [];
 
         $scope.folders = res.items
@@ -141,17 +142,20 @@ angular.module('drivein')
 
         $scope.items = res.items;
         
+        // get reference from iported csv references
+        var references = res.items.filter(function(d) {
+          return (d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1)
+        });
 
         bibtexs = res.items.filter(function(d) {
           return d.mimeType == 'text/x-bibtex';
         });
-        console.log($scope.folders);
-        // download bibtext and build up the bibliography
-        if (bibtexs.length) {
-          for (var i in bibtexs) {
+        console.log(references, $scope.access_token)
+        if(references.length) {
+          for(var i in references) {
             queue.push(
               $http({
-                url: bibtexs[i].downloadUrl,
+                url: references[i].downloadUrl,
                 method: 'GET',
                 headers: {
                  'Authorization': 'Bearer ' + $scope.access_token
@@ -162,14 +166,29 @@ angular.module('drivein')
 
           $q.all(queue).then(function(responses) {
             console.log('responses', responses);
+            var r = [];
+            responses.forEach(function(d) {
+              console.log(d)
+              r = r.concat($.csv.toObjects(d.data).map(function(d) {
+                var t = {};
+                for(var k in d){
+                  t[k.replace(/\s/g, '_')] = d[k];
+                };
+                return t;
+              }));
+            });
+
+            $scope.references = r;
             $scope.bibliography = true;
-            $scope.references = responses.filter(function(d) {
-              $log.info('layoutCtrl, parsing references from bibtex')
-              return mla(d.data).getEntries();
-            })
+            //$scope.references = responses.filter(function(d) {
+            //  $log.info('layoutCtrl, parsing references from bibtex')
+            //  return mla(d.data).getEntries();
+            //})
+            //$scope.$apply()
           });
         };
         $scope.$apply()
+        
         
       }); // end of request execute
     };

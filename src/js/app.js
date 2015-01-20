@@ -19,10 +19,7 @@ angular.module('drivein', [
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'
       })
-      .when('/references', {
-        templateUrl: settings.baseurl + 'src/views/references.html',
-        controller: 'referencesCtrl'
-      })
+      
       .when('/drive-to/:folder', { // set new starting url
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'
@@ -30,6 +27,10 @@ angular.module('drivein', [
       .when('/:folder', { // home
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'
+      })
+      .when('/:folder/d/references', {
+        templateUrl: settings.baseurl + 'src/views/references.html',
+        controller: 'referencesCtrl'
       })
       .when('/:folder/:path', { // subpath (1 level max)
         templateUrl: settings.baseurl + 'src/views/index.html',

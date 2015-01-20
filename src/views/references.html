@@ -1,6 +1,13 @@
 
-<div ng-if="bibliography">
+<div id="references" ng-if="references.length">
+  <h2>
   references
-
-  {{references.length}}
+  </h2>
+  
+  <div ng-repeat="ref in references">
+    <span class="author">{{ref.Author}}</span>
+    <i class="title">{{ref.Title}}</i> 
+    <span class="publisher">{{ref.Publisher}}</span>
+    <span class="publication_year">{{ref.Publication_Year}}</span> 
+  </div>
 </div>

@@ -33,7 +33,7 @@
             <li ng-repeat="folder in folders" class="{{path == folder.slug? 'selected': ''}}">
               <a ng-href="#/{{fileId}}/{{folder.slug}}">{{folder.title}}</a>
             </li>
-            <li ng-if="bibliography"><a ng-href="#/references">bibliography</a></li>
+            <li ng-if="bibliography">cfr. <a ng-href="#/{{fileId}}/d/references">references</a></li>
           </ul>
         </aside>
 
@@ -70,7 +70,7 @@
 
     <!-- cdn resources -->
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
     <!--
 
         bibtext/markdown interpreters

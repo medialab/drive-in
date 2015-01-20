@@ -89,7 +89,7 @@ angular.module('drivein')
         };
         */
 
-      console.log('documentu', result);
+      //console.log('documentu', result);
 
       return result;
     };

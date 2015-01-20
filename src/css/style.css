@@ -66,9 +66,9 @@ aside li.selected a{
   text-decoration: underline;
 }
 
-#login h2{
+#login h2, #references h2{
   margin: 30px 0;
-  font-size: 20px;
+  font-size: 15px;
   line-height: 30px;
 
 }
