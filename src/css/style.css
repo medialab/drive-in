@@ -1,5 +1,5 @@
 body {
-  font: 15px/25px 'Open sans', sans-serif;
+  font: 13px/20px 'Open sans', sans-serif;
   color: #1d1d1d;
   
 }
@@ -35,8 +35,16 @@ aside h1{
   padding: 0 10px;
 }
 
+a{
+  color: crimson;
+}
+
+a:hover{
+  color:tomato;
+}
+
 h1,h2,h3,h4,h5{
-  font-size: 1em;
+  font-weight: normal;
 }
 
 aside ul{
@@ -47,15 +55,22 @@ aside li{
   margin: 10px;
 }
 
-aside li.selected a{
-  background: #f5f5f5;
+aside li a{
+  display: inline-block;
+  cursor: pointer;
+
 }
 
-
+aside li.selected a{
+  color: #1d1d1d;
+  text-decoration: underline;
+}
 
 #login h2{
   margin: 30px 0;
+  font-size: 20px;
   line-height: 30px;
+
 }
 
 #wrapper{
@@ -70,22 +85,36 @@ aside li.selected a{
 }
 
 .gdoc{
-  margin: 50px 0 20px 0px;
+  margin: 80px 0 20px 0px;
+  max-width: 710px;
   overflow: hidden;
 }
 
-.gdoc h2{
-  font-size: 20px;
-  line-height: 30px;
-  margin-bottom: 20px;
+.gdoc iframe{
+  margin: 20px 0;
 }
-.gdoc h2, .gdoc .subtitle, .gdoc .contents{
+
+.gdoc h1, .gdoc h2, .gdoc h3, .gdoc h4, .gdoc h5, .gdoc h6{
+  font-size: 15px;
+}
+
+.gdoc .title {
+  font-size: 24px;
+  line-height: 35px;
+  margin-bottom: 25px;
+}
+
+.gdoc .title, .gdoc .subtitle, .gdoc .contents{
   margin-right: 170px;
 }
 
 .gdoc .subtitle{
   font-style: italic;
   margin-bottom: 20px;
+}
+
+.gdoc .title p, .gdoc .subtitle p, .gdoc .contents p{
+  margin: 0;
 }
 
 .gdoc section{

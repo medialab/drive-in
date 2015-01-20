@@ -50,13 +50,19 @@ angular.module('drivein')
       // # sections
       title.remove();
       subtitle.remove();
-      // transform links in setion
-      // nothing before the very first section
-      /*result.html = Q.get().nextUntil('h1').get().map(function(e) {
-        return $(e).html()
-      }).join('');
-  */
 
+      // transform vimeo links inside sections
+      Q.find('a').each(function(i, el) {
+        var el = $(this),
+            href = el.attr('href')  || '',
+            is_vimeo = href.match(/vimeo\.com.*?(\d{8,})/);
+
+        if(is_vimeo) {
+          el.replaceWith($('<div/>',{'class': 'vimeo'}).append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
+        }
+      });
+
+      // for each section, save the world
       Q.find('h1').each(function(i, el) {
         var contents = '<p>' + $(this).nextUntil('h1').get().map(function(e) {return $(e).html()}).join('<p></p>') + '</p>', // html specific to this section
             section = {
