@@ -21,15 +21,32 @@ angular.module('drivein')
             .replace(/style="(.*?)"/g,'')
 
             .replace(/class="(.*?)"/g,'')
+            .replace(/data-cl=/g, 'class=')
             .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
             
             .replace(/<p\s+>/g,'<p>');
       
     }
     
+    // reurn an object
+    function transformHref(elements, doc) {
+      elements.each(function(i, el) {
+        var el = $(this),
+            href = el.attr('href')  || '',
+            is_vimeo = href.match(/vimeo\.com.*?(\d{8,})/),
+            is_local = href.match(/^#(.*?)/);
+
+        if(is_vimeo) {
+          el.replaceWith($('<div/>',{'data-cl': 'vimeo'}).append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
+        } else if(is_local) {
+          el.attr('href', doc.id + '/' +is_local[0])
+        }
+      });
+    }
 
     // transform the source text of a googledocument into a json object.
-    function parse(text) {
+    function parse(text, doc) {
+      console.log('parse', doc)
       var body = text.match(/<body[^>]*>(.*?)<\/body>/i),
           Q = $('<div/>').append(body.pop()),
           result = {
@@ -39,28 +56,22 @@ angular.module('drivein')
           subtitle = Q.find('.subtitle');
 
 
-      result.title = '<p>'+ title.get().map(function(e) {
-        return $(e).html()
-      }).join('</p></p>') + '</p>';
+      result.title = title.get().map(function(e) {
+        transformHref($(e).find('a'), doc);
+        return '<' + e.tagName.toLowerCase() + '>' + $(e).html() + '</' + e.tagName.toLowerCase() +'>';
+      }).join('');
 
-      result.subtitle = '<p>'+ subtitle.get().map(function(e) {
-        return $(e).html()
-      }).join('</p></p>') + '</p>';
+      result.subtitle = subtitle.get().map(function(e) {
+        transformHref($(e).find('a'), doc);
+        return '<' + e.tagName.toLowerCase() + '>' + $(e).html() + '</' + e.tagName.toLowerCase() +'>';
+      }).join('');
 
       // # sections
       title.remove();
       subtitle.remove();
 
       // transform vimeo links inside sections
-      Q.find('a').each(function(i, el) {
-        var el = $(this),
-            href = el.attr('href')  || '',
-            is_vimeo = href.match(/vimeo\.com.*?(\d{8,})/);
-
-        if(is_vimeo) {
-          el.replaceWith($('<div/>',{'class': 'vimeo'}).append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
-        }
-      });
+      transformHref(Q.find('a'), doc);
 
       // for each section, save the world
       Q.find('h1').each(function(i, el) {
@@ -69,12 +80,12 @@ angular.module('drivein')
 
               el.find('img').each(function() {
                 var img = $(this);
-                img.replaceWith($('<div/>',{'class': 'image'}).append(
-                  '<img src="'+img.attr('src')+'" alt="alternative text"/><div class="caption">'+img.attr('title')+'</div><div class="reference">'+img.attr('alt')+'</div>'
+                img.replaceWith($('<div/>',{'data-cl': 'image'}).append(
+                  '<img src="'+img.attr('src')+'" alt="alternative text"/><div data-cl="caption">'+img.attr('title')+'</div><div data-cl="reference">'+img.attr('alt')+'</div>'
                 ));
               });
 
-              console.log(e.tagName);
+              
               return '<' + e.tagName.toLowerCase() + '>' + el.html() + '</' + e.tagName.toLowerCase() +'>';
             }).join(''), // html specific to this section
             section = {
@@ -119,7 +130,7 @@ angular.module('drivein')
          'Authorization': 'Bearer ' + $scope.access_token
         }
       }).then(function(res) {
-        return parse(res.data)
+        return parse(res.data, doc)
       });
     }
 

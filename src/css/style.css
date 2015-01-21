@@ -114,6 +114,26 @@ nav h1{
   margin: 20px 0;
 }
 
+.gdoc .image{
+  margin: 20px 0;
+  padding: 10px;
+  background: #f5f5f5;
+}
+
+.gdoc .image img{
+  max-width: 100%;
+}
+
+.gdoc .image .caption{
+  padding: 10px;
+}
+
+.gdoc .image .reference{
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0 10px 10px 10px;
+}
+
 .gdoc h1, .gdoc h2, .gdoc h3, .gdoc h4, .gdoc h5, .gdoc h6{
   font-size: 15px;
 }
