@@ -84,7 +84,7 @@ angular.module('drivein')
       $scope.path = candidate;
 
       gapi.client.drive.files.list({
-        q:  '"'+ path.pop().id + '" in parents'
+        q:  '"'+ path.pop().id + '" in parents and trashed = false'
       }).execute(function(res) { // analyse folder
         $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res);
         if(!res.items){
@@ -120,7 +120,7 @@ angular.module('drivein')
       $scope.fileId = fileid; // root folder
       
       var request = gapi.client.drive.files.list({
-        q:  '"'+ fileid + '" in parents'
+        q:  '"'+ fileid + '" in parents and trashed = false'
       });
 
       $log.info('layoutCtrl >>> executing', fileid);
