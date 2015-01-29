@@ -30,12 +30,17 @@ angular.module('drivein', [
       })
       .when('/:folder/d/references', {
         templateUrl: settings.baseurl + 'src/views/references.html',
-        controller: 'referencesCtrl'
+        controller: 'pageCtrl'
+      })
+      .when('/:folder/d/about', {
+        templateUrl: settings.baseurl + 'src/views/about.html',
+        controller: 'pageCtrl'
       })
       .when('/:folder/:path', { // subpath (1 level max)
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'
       })
+
       .otherwise({
         redirectTo: '/'
       });

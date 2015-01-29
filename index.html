@@ -33,7 +33,9 @@
             <li ng-repeat="folder in folders" class="{{path == folder.slug? 'selected': ''}}">
               <a ng-href="#/{{fileId}}/{{folder.slug}}">{{folder.title}}</a>
             </li>
-            <li ng-if="bibliography">cfr. <a ng-href="#/{{fileId}}/d/references">references</a></li>
+            <li>&nbsp;</li>
+            <li ng-if="bibliography"><a ng-href="#/{{fileId}}/d/references">references</a></li>
+            <li ng-if="metadata"><a ng-href="#/{{fileId}}/d/about">about</a></li>
           </ul>
         </aside>
 
@@ -107,7 +109,7 @@
     <script src="src/js/controllers/starter.js"></script>
     <script src="src/js/controllers/layout.js"></script>
     <script src="src/js/controllers/index.js"></script>
-    <script src="src/js/controllers/references.js"></script>
+    <script src="src/js/controllers/page.js"></script>
     <script src="src/js/directives/gdoc.js"></script>
         
 
