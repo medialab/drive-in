@@ -34,8 +34,8 @@
               <a ng-href="#/{{fileId}}/{{folder.slug}}">{{folder.title}}</a>
             </li>
             <li>&nbsp;</li>
-            <li ng-if="bibliography"><a ng-href="#/{{fileId}}/d/references">references</a></li>
-            <li ng-if="metadata"><a ng-href="#/{{fileId}}/d/about">about</a></li>
+            <li class="{{path == 'references'? 'selected': ''}}"  ng-if="bibliography"><a ng-href="#/{{fileId}}/d/references">references</a></li>
+            <li class="{{path == 'about'? 'selected': ''}}"  ng-if="metadata"><a ng-href="#/{{fileId}}/d/about">about</a></li>
           </ul>
         </aside>
 
