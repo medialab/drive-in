@@ -46,7 +46,7 @@ angular.module('drivein')
 
     // transform the source text of a googledocument into a json object.
     function parse(text, doc) {
-      console.log('parse', doc)
+      //console.log('parse', doc)
       var body = text.match(/<body[^>]*>(.*?)<\/body>/i),
           Q = $('<div/>').append(body.pop()),
           result = {
@@ -136,7 +136,7 @@ angular.module('drivein')
 
     /*
       ##eventListener $scope.items
-      watch for changements in documents ROOT collection ($scope.items)
+      Watch for changements in documents ROOT collection ($scope.items)
     */
     $scope.$watch('items', function(items) { // once items are in place, let's load them if needed
       if(items){ // the root folder has  benn loaded !
@@ -147,7 +147,8 @@ angular.module('drivein')
 
     /*
       ##eventListener $scope.app_status
-      If everything is ready, load main content.
+      If everything is ready app_status has been set to APP_STATUS_READY.
+      This allow to load folder content and start the parsing chain.
     */
     $scope.$watch('app_status', function(app_status){
       $log.log('indexCtrl @app_status', app_status);

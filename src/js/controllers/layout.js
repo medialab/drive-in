@@ -56,6 +56,18 @@ angular.module('drivein')
     };
 
     /*
+      ##function clean_csv_headers
+      given a javascript dict, clean its keys in order to be flushed into the template
+    */
+    function clean_csv_headers(d){
+      var t = {};
+      for(var k in d){
+        t[k.replace(/\s/g, '_')] = d[k];
+      };
+      return t;
+    };
+    
+    /*
       ##function setPath
       Set the current path, loading children via google api.
       For home page, it uses the stored res resources.
@@ -83,10 +95,11 @@ angular.module('drivein')
         
       $scope.path = candidate;
 
+      // get documents in folder.
       gapi.client.drive.files.list({
         q:  '"'+ path.pop().id + '" in parents and trashed = false'
       }).execute(function(res) { // analyse folder
-        $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res);
+        $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res.kind);
         if(!res.items){
           $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...')
           return;
@@ -107,11 +120,11 @@ angular.module('drivein')
 
     /*
       ##function discover
-      given a starting point url:
+      given a starting point url (the root of our website):
       - extract the fileId
       - request its list of children from gapi
       - separate children items into folders, csv bibtext but NOT google documents. Cfr setPath for this
-      - finally, transform references found into csv
+      - finally, transform references
       - fill the vars $scope.references, $scope.folders, $scope.docs
       @param fileid - google drive sharing link
     */
@@ -142,15 +155,38 @@ angular.module('drivein')
 
         $scope.items = res.items;
         
+        // get metadata
+        var metadata = res.items.filter(function(d) {
+          return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('metadata') != -1;
+        });
+
         // get reference from iported csv references
         var references = res.items.filter(function(d) {
-          return (d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1)
+          return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1;
         });
 
         bibtexs = res.items.filter(function(d) {
           return d.mimeType == 'text/x-bibtex';
         });
-        console.log(references, $scope.access_token)
+        
+        // get metadata from file (there should be only one per drive-in !)
+        if(metadata.length) { 
+          var met = metadata.pop();
+          $http({
+            url: met.downloadUrl,
+            method: 'GET',
+            headers: {
+             'Authorization': 'Bearer ' + $scope.access_token
+            }
+          }).then(function(res) {
+            try{
+              $scope.metadata = $.csv.toObjects(res.data).map(clean_csv_headers)[0];
+            } catch(e) { // metadata csv is not correct
+              $log.error(e)
+            }
+          });
+        };
+
         if(references.length) {
           for(var i in references) {
             queue.push(
@@ -165,29 +201,17 @@ angular.module('drivein')
           };
 
           $q.all(queue).then(function(responses) {
-            console.log('responses', responses);
             var r = [];
-            responses.forEach(function(d) {
-              console.log(d)
-              r = r.concat($.csv.toObjects(d.data).map(function(d) {
-                var t = {};
-                for(var k in d){
-                  t[k.replace(/\s/g, '_')] = d[k];
-                };
-                return t;
-              }));
+            // transform csv data to js, then clean each csv header
+            responses.forEach(function(d) { 
+              r = r.concat($.csv.toObjects(d.data).map(clean_csv_headers));
             });
 
             $scope.references = r;
             $scope.bibliography = true;
-            //$scope.references = responses.filter(function(d) {
-            //  $log.info('layoutCtrl, parsing references from bibtex')
-            //  return mla(d.data).getEntries();
-            //})
-            //$scope.$apply()
           });
         };
-        $scope.$apply()
+        $scope.$apply();
         
         
       }); // end of request execute
