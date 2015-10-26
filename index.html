@@ -1,189 +1,157 @@
-<!doctype html>
-<html lang="en" ng-app="tipot">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Drive-In Edge</title>
+  <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+  <script src="mammoth.browser.js"></script>
+  <script type="text/javascript">
+    var CLIENT_ID = '72848749493-pva84reb1v48u6ddc6l7cukmsso7qib2.apps.googleusercontent.com',
+        SCOPES = [
+          'https://www.googleapis.com/auth/drive.metadata.readonly',
+          'https://www.googleapis.com/auth/drive'
+        ],
+        FOLDER_ID = '0BzN4DMSEkyAFUENlamlIUVhDalU',
+        TYPE_FOLDER = 'application/vnd.google-apps.folder',
+        TYPE_DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
-  <head>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
-    <link href='src/css/style.css' rel='stylesheet' type='text/css'>
-
-    <script src="settings.js"></script>
-  </head>
-
-  <body>
-    <style>
-    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-      display: none !important;
+    function checkAuth() {
+      gapi.auth.authorize({
+        'client_id': CLIENT_ID,
+        'scope': SCOPES.join(' '),
+        'immediate': true,
+      }, handleAuthResult);
     }
 
-    body{
-      height: 100%;
-      margin: 0;
-      padding:0;
+    function handleAuthResult(result) {
+      var authDiv = document.getElementById('authorize-div');
+      if (result && !result.error) {
+        authDiv.style.display = 'none';
+        loadDriveApi();
+      } else {
+        authDiv.style.display = 'inline';
+      }
     }
 
-    ul{
-      list-style-type: none;
-      margin: 36px;
-      padding-left: 0;
+    function handleAuthClick(e) {
+      gapi.auth.authorize({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        immediate: false
+      }, handleAuthResult);
+      return false;
     }
 
-    ul li{
-      color: #888;
+    function loadDriveApi() {
+      gapi.client.load('drive', 'v2', init);
     }
 
-    ul li a {
-      color: #888;
-      text-decoration: none;
+    function retrieveAllFilesInFolder(folderId, callback) {
+      var retrievePageOfChildren = function(request, result) {
+        request.execute(function(resp) {
+          result = result.concat(resp.items);
+          var nextPageToken = resp.nextPageToken;
+          if (nextPageToken) {
+            request = gapi.client.drive.children.list({
+              'folderId' : folderId,
+              'pageToken': nextPageToken
+            });
+            retrievePageOfChildren(request, result);
+          } else {
+            callback(result);
+          }
+        });
+      }
+      var initialRequest = gapi.client.drive.children.list({
+        'folderId' : folderId
+      });
+      retrievePageOfChildren(initialRequest, []);
     }
 
-    ul li.menu-item{
-      padding-left: 8px;
-      margin-bottom: 18px;
-      cursor: pointer;
-    }
-    
 
-    sidebar{
-      width: 228px;
-      position: fixed;
-      top:0;
-      height: 100%;
-    }
-
-    sidebar h1{
-      
-      font-size: 13px;
-      background: #cc1600;
-      color: white;
-      display: inline-block;
-      font-weight: normal;
-      padding: 3px 8px;
-      line-height: 18px;
-      margin-bottom: 18px;
-
+    function downloadFile(file, callback) {
+      if (file.selfLink) {
+        var accessToken = gapi.auth.getToken().access_token;
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.open('GET', file.selfLink + '?alt=media');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.onload = function() {
+          var blob = xhr.response;
+          console.log(blob);
+          callback(blob);
+        };
+        xhr.onerror = function() {
+          callback(null);
+        };
+        xhr.send();
+      } else {
+        callback(null);
+      }
     }
 
-    #wrapper{
-      padding: 75px 0 75px 266px;
-      width: 640px;
+    function readFileAsArrayBuffer(blob, callback) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var arrayBuffer = e.target.result;
+        callback(arrayBuffer);
+      };
+      reader.readAsArrayBuffer(blob);
     }
 
-    
-    
-    .file{
-      width:100%;
-      overflow:hidden;
-      position: relative;
+    function init() {
+      var rootFolder = [];
+
+      function browseFolder(id, o) {
+        var req = gapi.client.drive.files.get({
+          fileId: id
+        });
+
+        req.execute(function (file) {
+          console.log(file);
+          console.log('Title: ' + file.title);
+          console.log('MIME Type: ' + file.mimeType);
+
+          if (file.mimeType === TYPE_DOCX) {
+            getContent(o, file);
+          } else if (file.mimeType === TYPE_FOLDER) {
+            retrieveAllFilesInFolder(file.id, processFile);
+          }
+        });
+      }
+
+      function getContent(o, f) {
+        downloadFile(f, function (blob) {
+          readFileAsArrayBuffer(blob, function (arrayBuffer) {
+            mammoth
+              .convertToHtml({ arrayBuffer: arrayBuffer })
+              .then(function (data) {
+                o.html = data.value;
+                rootFolder.push(o);
+                console.log(rootFolder)
+              })
+              .done();
+          })
+        });
+      }
+
+      function processFile(f) {
+        var o = {};
+        _.each(f, function (child) {
+          browseFolder(child.id, o);
+        });
+      }
+
+      retrieveAllFilesInFolder(FOLDER_ID, processFile);
     }
-
-    .file img{
-      max-width: 100%;
-    }
-    </style>
-    <div id="drive-starter" ng-controller="starterCtrl"></div>
-
-    <div id="layout" ng-cloak ng-controller="layoutCtrl">
-      <sidebar>
-        <ul>
-          <li><h1>{{title}}</h1></li>
-          
-          <li class="menu-item" ng-class="page == 'index'? 'selected':''">
-            <a href="#/">index</a>
-          </li> <!-- home folder -->
-          <li class="menu-item" ng-repeat="folder in folders" ng-class="folder.id == page? 'selected':''">
-            <a href="#/{{folder.slug}}">{{folder.title|cut:true:50}}</a>
-          </li>
-          <li>&nbsp;</li>
-          <li class="menu-item" ng-repeat="section in sections">
-            <span ng-if="section.type">
-              <a title="{{section.title}}">{{section.title|cut:true:50}}</a>
-            </span>
-            <span ng-if="!section.type">
-              <a href="#/drive-in/{{section.id}}" title="{{section.title}}">{{section.title|cut:true:50}}</a>
-            </span>
-          </li>
-          <li>&nbsp;</li>
-          <li class="menu-item" ng-repeat="bib in bibliography">
-            <a href="#/bibliography">{{bib.title}}</a>
-          </li>
-        </ul>
-      </sidebar>
-      <div id="wrapper" ng-view></div> <!-- cfr app.js and templates are under src/partials -->
-    </div>
-    
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
-    <!--
-
-        bibtext/markdown interpreters
-        =============================
-    -->
-    <script src="src/js/libs/bibtex.js"></script>
-    <script src="src/js/libs/showdown.min.js"></script>
-    <script src="src/js/libs/showdown-twitter.min.js"></script>
-    <script src="src/js/libs/showdown-vimeo.js"></script>
-
-
-
-    <!--
-
-        angular libraries
-        ==================
-    -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-sanitize.min.js"></script>
-
-
-
-    <!--
-
-          google analytics for angular
-          ============================
-    -->
-    <script src="src/js/libs/angularytics.min.js"></script>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-54421683-1', 'auto');
-      ga('send', 'pageview');
-    </script>
-
-
-
-    <!--
-
-          angular app
-          ===========
-    -->
-    <script src="src/js/app.js"></script>
-    <script src="src/js/controllers.js"></script>
-    <script src="src/js/services.js"></script>
-    <script src="src/js/directives.js"></script>
-    <script src="src/js/filters.js"></script>
-
-
-
-    <!--
-
-          big init
-          ========
-    -->
-    <script>
-    /*
-      Onload fnctio called after google drive api initialization (it takes more than one may expects)
-    */
-    function load() {
-      var scope = angular.element($("#drive-starter")).scope(); // cfr StarterCtrl in controllers.js
-      scope.$emit(GOOGLE_CLIENT_INITIALIZED, settings);
-    }
-    </script>
-    <script src="https://apis.google.com/js/client.js?onload=load"></script>
-
-
-
-  </body>
+  </script>
+</head>
+<body>
+  <div id="authorize-div">
+    <span>Authorize access to Drive API</span>
+    <button id="authorize-button" onclick="handleAuthClick(event)">
+      Authorize
+    </button>
+  </div>
+</body>
 </html>
