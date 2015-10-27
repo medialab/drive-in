@@ -16,6 +16,8 @@ angular.module('driveIn', [
 }])
 
 .controller('MainCtrl', ['$scope', '$log', function($scope, $log) {
+  $scope.isAuthenticated = false;
+
   $scope.$on('authenticated', function (e) {
     $log.info(e)
   });
