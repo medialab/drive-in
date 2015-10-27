@@ -1,18 +1,18 @@
 'use strict';
 
-angular.module('driveIn.init', ['ngRoute'])
+angular.module('driveIn.auth', ['ngRoute'])
 
 .config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/drive-in', {
-    templateUrl: 'views/init/init.html',
-    controller: 'InitCtrl'
+    templateUrl: 'components/auth/auth.html',
+    controller: 'AuthCtrl'
   });
 }])
 
 /**
- * InitCrl is a controller related to the `initializer` directive.
+ * AuthCrl is a controller related to the `auth` directive.
  */
-.controller('InitCtrl', ['$scope', '$log', 'authenticator', 'apiLoader', function ($scope, $log, authenticator, apiLoader) {
+.controller('AuthCtrl', ['$scope', '$log', 'authenticator', 'apiLoader', function ($scope, $log, authenticator, apiLoader) {
 
   // Attempt to authenticate on initialization.
   attemptAuth();
@@ -48,6 +48,6 @@ angular.module('driveIn.init', ['ngRoute'])
 .directive('initializer', function () {
   return {
     restrict: 'E',
-    controller: 'InitCtrl',
+    controller: 'AuthCtrl',
   };
 })

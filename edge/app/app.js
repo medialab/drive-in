@@ -2,7 +2,7 @@
 
 angular.module('driveIn', [
   'ngRoute',
-  'driveIn.init',
+  'driveIn.auth',
   'driveIn.drivein',
 ])
 
