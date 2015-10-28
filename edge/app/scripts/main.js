@@ -17,6 +17,7 @@ require([
 
   var CLIENT_ID = '72848749493-pva84reb1v48u6ddc6l7cukmsso7qib2.apps.googleusercontent.com',
       SCOPES = [
+        'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/drive.metadata.readonly',
         'https://www.googleapis.com/auth/drive'
       ],
@@ -25,12 +26,13 @@ require([
       TYPE_DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
   var AuthModel = Backbone.Model.extend({
-    auth: function (callback) {
+
+    authorize: function (callback) {
       var isAttemptingAuth = false,
           currentAuthAttempt = 0,
           maxAuthAttempt = 5;
 
-      var attemptAuth = function (callback) {
+      function attemptAuth(callback) {
         if (isAttemptingAuth) return;
 
         console.log('[DRIVE-IN] OAuth2: attempting authentication...');
@@ -44,13 +46,9 @@ require([
           isAttemptingAuth = true;
           gapi.auth.authorize({
             'client_id': CLIENT_ID,
-            'scope': SCOPES.join(' '),
+            'scope': SCOPES,
             'immediate': true
-          }, function (oauthToken) {
-            console.log('[DRIVE-IN] OAuth2: done.')
-            isAttemptingAuth = false;
-            callback(oauthToken)
-          });
+          }, handleAuthResult);
         } else {
           currentAuthAttempt++;
           if (currentAuthAttempt < maxAuthAttempt) {
@@ -67,17 +65,30 @@ require([
             return;
           }
         }
-      };
+      }
+
+      function handleAuthResult(authResult) {
+        if (authResult && !authResult.error) {
+          callback(authResult);
+        } else {
+          gapi.auth.authorize({
+            'client_id': CLIENT_ID,
+            'scope': SCOPES,
+            'immediate': false
+          }, handleAuthResult);
+        }
+      }
 
       // Start here.
       attemptAuth(callback);
     }
+
   });
 
   var auth = new AuthModel();
-  auth.auth(function (token) {
-    console.log(token)
-  })
+  auth.authorize(function (token) {
+    auth.set('token', token);
+  });
 
   Backbone.history.start();
 });
