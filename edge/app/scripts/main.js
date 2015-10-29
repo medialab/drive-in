@@ -11,13 +11,14 @@ require.config({
     backbone: '../bower_components/backbone/backbone',
     underscore: '../bower_components/lodash/dist/lodash',
     Q: '../bower_components/q/q',
-    async: '../bower_components/async/dist/async'
+    async: '../bower_components/async/dist/async',
+    mammoth: 'vendor/mammoth.browser.min'
   }
 });
 
 require([
-  'backbone', 'Q', 'async'
-], function (Backbone, Q, async) {
+  'backbone', 'Q', 'async', 'mammoth'
+], function (Backbone, Q, async, mammoth) {
 
   var CLIENT_ID = '72848749493-pva84reb1v48u6ddc6l7cukmsso7qib2.apps.googleusercontent.com',
       SCOPES = [
@@ -90,15 +91,17 @@ require([
 
   });
 
-  var FileProcessor = Backbone.Model.extend({
+  var FilesProcessor = Backbone.Model.extend({
 
     queue: null,
+    countTotalHtmlisableDoc: 0,
+    currentCountHtmlisableDoc: 0,
 
     initialize: function (opts) {
       var tree = (opts && opts.tree) ? opts.tree : {};
       this.set('tree', tree);
 
-      _.bindAll(this, 'processFiles');
+      _.bindAll(this, 'processFiles', 'generateHtmlFromTree');
     },
 
     retrieveAllFilesInFolder: function (folderId) {
@@ -138,7 +141,7 @@ require([
     processFiles: function (payload) {
       var files = payload.files,
           folderId = payload.folderId,
-          crawl;
+          crawl, addFileToTree;
 
       console.log('[DRIVE-IN] Building files tree for folder "' + folderId + '"...');
 
@@ -161,19 +164,49 @@ require([
 
       if (this.queue === null) {
         this.queue = async.queue(function (task, callback) {
-          crawl(task.id, task._________________parentId, callback);
+          crawl(task.id, task.parentId, callback);
         });
 
         this.queue.drain = function () {
           console.log('[DRIVE-IN] Files tree is ready.');
+          this.generateHtmlFromTree(this.get('tree'));
           return;
         }.bind(this)
       }
 
       _.each(files, function (file) {
-        file._________________parentId = folderId
+        file.parentId = folderId
         this.queue.push(file, fileProcessFinishedHandler);
       }.bind(this));
+
+      addFileToTree = function (tree, folderId, file) {
+        var filePayload = {
+          id: file.id,
+          type: 'file',
+          link: file.selfLink,
+          data: file,
+          html: ''
+        };
+
+        // Treatment for single files at the top level directory.
+        if (folderId == FOLDER_ID) {
+          tree[file.id] = filePayload;
+          return tree;
+        }
+
+        // Increment the total number of documents we will
+        // be transforming to HTML, so that we can create
+        // a counter during the transformation phase and
+        // trigger an event to notify the app when all
+        // files have been transformed.
+        this.countTotalHtmlisableDoc++;
+
+        // Add file object to its parent folder object.
+        // Use file's ID as key.
+        tree[folderId].children[file.id] = filePayload;
+
+        return tree;
+      }.bind(this);
 
       function fileProcessFinishedHandler(err) {
         if (err) {
@@ -193,29 +226,127 @@ require([
         return tree;
       }
 
-      function addFileToTree(tree, folderId, file) {
-        var filePayload = {
-          id: file.id,
-          type: 'file',
-          data: file
-        };
+      console.groupEnd();
+    },
 
-        if (folderId == FOLDER_ID) {
-          tree[file.id] = filePayload;
-          return tree;
-        }
+    generateHtmlFromTree(tree) {
+      console.groupCollapsed('[DRIVE-IN] Generating HTML for files in tree.');
 
-        tree[folderId].children[file.id] = filePayload;
-        return tree;
+      var self = this;
+
+      var crawlFolder = function (folder) {
+        console.log('[DRIVE-IN] Crawling folder ' + folder.id + '.');
+        var children = folder.children;
+        _.each(children, function (child) {
+          if (child.type === 'file') {
+            transformFile(child);
+          } else if (child.type == 'folder') {
+            crawlFolder(child);
+          }
+        });
+      }.bind(this);
+
+      function transformFile(file) {
+        console.log('[DRIVE-IN] Starting transform process for file ' + file.id + '.');
+        downloadFile(file, convertFileBlobToHtml);
       }
+
+      function downloadFile(file, callback) {
+        if (file.link) {
+          console.log('[DRIVE-IN] Downloading ' + file.id + '.');
+
+          var errorMsg = '[DRIVE-IN] There was an error while downloading the file (id: ' + file.id
+                          + ') from Google Drive. Try requesting the URI yourself to see if an error '
+                          + 'message is provided: ' + file.link,
+              accessToken = gapi.auth.getToken().access_token,
+              xhr = new XMLHttpRequest();
+
+          xhr.responseType = 'blob';
+          xhr.open('GET', file.link + '?alt=media');
+          xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+          xhr.onload = function() {
+            if (xhr.status === 200 && xhr.statusText === "OK") {
+              var blob = xhr.response;
+              callback(file, blob);
+            } else {
+              console.error(errorMsg);
+              callback(null);
+            }
+          };
+          xhr.onerror = function() {
+            console.error(errorMsg);
+            callback(null);
+          };
+          xhr.send();
+        } else {
+          callback(null);
+        }
+      }
+
+      function convertFileBlobToHtml(file, blob) {
+        readFileAsArrayBuffer(blob, function (arrayBuffer) {
+          if (!arrayBuffer) return;
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (html) {
+              console.log('[DRIVE-IN] Done converting file.');
+              file.html = html;
+
+              self.currentCountHtmlisableDoc++;
+
+              if (self.currentCountHtmlisableDoc === self.countTotalHtmlisableDoc) {
+                self.trigger('event:filetree:ready', self.get('tree'));
+              }
+
+              return file;
+            })
+            .done();
+        });
+      }
+
+      function readFileAsArrayBuffer(blob, callback) {
+        if (!blob) {
+          console.info('[DRIVE-IN] No Blob given to readFileAsArrayBuffer(). Aborting.');
+          return null;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var arrayBuffer = e.target.result;
+          callback(arrayBuffer);
+        };
+        reader.readAsArrayBuffer(blob);
+      }
+
+      _.each(tree, function (branch) {
+        switch (branch.type) {
+          case 'folder':
+            crawlFolder(branch);
+            break;
+          case 'file':
+            transformFile(branch);
+            break;
+        }
+      });
 
       console.groupEnd();
     }
 
   });
 
+  var Parser = Backbone.Model.extend({
+    parse: function (tree) {
+      console.log('[DRIVE-IN] Parsing files tree.');
+      console.log(tree);
+    }
+  });
+
   var auth = new Auth(),
-      fileProcessor = new FileProcessor();
+      filesProcessor = new FilesProcessor(),
+      parser = new Parser();
+
+  filesProcessor.on('event:filetree:ready', function (tree) {
+    parser.parse(tree);
+  });
 
   auth.authorize(function (token) {
     auth.set('token', token);
@@ -223,9 +354,10 @@ require([
   });
 
   function gapiClientLoadHandler() {
-    fileProcessor
+    filesProcessor
       .retrieveAllFilesInFolder(FOLDER_ID)
-      .then(fileProcessor.processFiles);
+      .then(filesProcessor.processFiles)
+      .done();
   }
 
   Backbone.history.start();
