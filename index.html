@@ -21,7 +21,7 @@
       padding:0;
     }
     </style>
-    
+
     <!-- layout ctrl handle google api stuff -->
     <div id="drive-starter" ng-cloak ng-controller="starterCtrl">
       <div id="layout" ng-cloak ng-controller="layoutCtrl">
@@ -47,10 +47,10 @@
                 </li>
               </ul -->
             </nav>
-            
+
         <div id="wrapper">
           <div class="inner">
-            
+
 
             <div id="login" ng-if="app_status == 'APP_STATUS_AUTHORIZATION_REQUIRED'">
               <h2>login with your google account</h2>
@@ -61,14 +61,14 @@
               <button class="btn btn-primary" ng-click="authorize()">authorize drive-in
 
               </button>
-              
+
             </div>
             <div class="page" ng-view>
             </div>
-            
+
           </div>
         </div> <!-- cfr app.js and templates are under src/views -->
-      
+
       </div>
     </div>
     <!-- eof #drive-starter -->
@@ -111,7 +111,7 @@
     <script src="src/js/controllers/index.js"></script>
     <script src="src/js/controllers/page.js"></script>
     <script src="src/js/directives/gdoc.js"></script>
-        
+
 
 
 
