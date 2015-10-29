@@ -1,7 +1,7 @@
 body {
   font: 13px/20px 'Open sans', sans-serif;
   color: #1d1d1d;
-  
+
 }
 
 *{
@@ -70,7 +70,7 @@ aside li.selected a{
 nav{
   position: fixed;
   border-bottom: 1px solid #d1d1d1;
-  height: 60px;
+  height: 70px;
   top: 0;
   left: 230px;
   right: 50px;
@@ -84,6 +84,11 @@ nav h1{
   font-size: 15px;
   margin: 15px 0 0 20px;
   color: #999;
+}
+
+#sections h1 {
+  font-size: 30px;
+  font-weight: bold;
 }
 
 #login h2, #page h2{
@@ -133,8 +138,30 @@ line-height: 35px;
   padding: 0 10px 10px 10px;
 }
 
-.gdoc h1, .gdoc h2, .gdoc h3, .gdoc h4, .gdoc h5, .gdoc h6{
+.gdoc h1 {
+  font-size: 20px;
+}
+
+.gdoc h2 {
+  font-size: 18px;
+}
+
+.gdoc h3 {
   font-size: 15px;
+}
+
+/*
+  According to new specs, h4 in the GDoc becomes a quote.
+  See https://trello.com/c/CbANinS5 for details.
+*/
+.gdoc h4, .gdoc blockquote {
+  font-size: 13px;
+  line-height: 19px;
+  font-style: italic;
+  border-left: 2px solid #AAA;
+  padding-left: 20px;
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 .gdoc .title {

@@ -14,8 +14,8 @@ angular.module('drivein')
     $log.debug('indexCtrl loaded.');
 
     function clean(html) {
-      return  html
-            .replace(/<span(.*?)>/g,'')
+      html.replace(/<span(.*?)>/g,'')
+            .replace(new RegExp('<p class="[^"]*"><span><\/span><\/p>', 'gi'), '<br>')
             .replace(/<\/span(.*?)>/g,'')
             .replace(/name="(.*?)"/g,'')
             .replace(/style="(.*?)"/g,'')
@@ -23,11 +23,13 @@ angular.module('drivein')
             .replace(/class="(.*?)"/g,'')
             .replace(/data-cl=/g, 'class=')
             .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
-            
+
             .replace(/<p\s+>/g,'<p>');
-      
+
+      console.log(html);
+      return html;
     }
-    
+
     // reurn an object
     function transformHref(elements, doc) {
       elements.each(function(i, el) {
@@ -73,48 +75,26 @@ angular.module('drivein')
       // transform vimeo links inside sections
       transformHref(Q.find('a'), doc);
 
-      // for each section, save the world
-      Q.find('h1').each(function(i, el) {
-        var contents = $(this).nextUntil('h1').get().map(function(e) {
-              var el = $(e);
+      console.log(Q.html());
 
-              el.find('img').each(function() {
-                var img = $(this);
-                img.replaceWith($('<div/>',{'data-cl': 'image'}).append(
-                  '<img src="'+img.attr('src')+'" alt="alternative text"/><div data-cl="caption">'+img.attr('title')+'</div><div data-cl="reference">'+img.attr('alt')+'</div>'
-                ));
-              });
+      Q.each(function (i, el) {
+        var $el = $(el);
 
-              
-              return '<' + e.tagName.toLowerCase() + '>' + el.html() + '</' + e.tagName.toLowerCase() +'>';
-            }).join(''), // html specific to this section
-            section = {
-              title: $(this).text(),
-              html: clean(contents), // demander à guillaume
-              type: 'text'
-            };
-            //nextUntil('h1')
-        
-        // split section if an image was found
-        /*J.find('img').each(function(e, el) {
-          var el = $(this);
-          // clean alt and title
-          
-        });*/
+        $el.find('img').each(function() {
+          var img = $(this);
+          img.replaceWith($('<div/>',{'data-cl': 'image'}).append(
+            '<img src="'+img.attr('src')+'" alt="alternative text"/><div data-cl="caption">'+img.attr('title')+'</div><div data-cl="reference">'+img.attr('alt')+'</div>'
+          ));
+        });
+
+        var section = {
+          title: $('h1,h2,h3,h4,h5,h6').first().get(),
+          html: $el.html(), // demander à guillaume
+          type: 'text'
+        };
 
         result.sections.push(section);
       });
-      
-      /*
-      $('h1').each( function(i, el){
-    var contents = $(this).nextUntil('h1').get().map(function(e) {return $(e).html()}).join(''), // html specific to this section
-        section = {
-          title: $(this).text(),
-          html: cmp(contents) // guillaume
-        };
-        */
-
-      //console.log('documentu', result);
 
       return result;
     };
@@ -122,7 +102,7 @@ angular.module('drivein')
     // load the given fileId and allow parsing
     $scope.load = function(doc) {
       $log.info('indexCtrl >>> load ', doc.title);// doc.exportLinks['text/html']);
-      
+
       return $http({
         url: doc.exportLinks['text/html'],
         method: 'GET',
@@ -140,8 +120,8 @@ angular.module('drivein')
     */
     $scope.$watch('items', function(items) { // once items are in place, let's load them if needed
       if(items){ // the root folder has  benn loaded !
-        $log.debug('indexCtrl @$scope.items evaluating path in order to load docs');  
-        $scope.setPath($routeParams.path); // load home documents if path is undefined! 
+        $log.debug('indexCtrl @$scope.items evaluating path in order to load docs');
+        $scope.setPath($routeParams.path); // load home documents if path is undefined!
       };
     });
 
@@ -155,7 +135,7 @@ angular.module('drivein')
       if(app_status != APP_STATUS_READY) {
         return;
       };
-      
+
       if($routeParams.folder && $scope.fileId != $routeParams.folder) {
         $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!')
         $scope.discover($routeParams.folder);
