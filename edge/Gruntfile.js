@@ -140,7 +140,8 @@ module.exports = function (grunt) {
                         'underscore': '../../<%= yeoman.app %>/bower_components/lodash/dist/lodash',
                         'backbone': '../../<%= yeoman.app %>/bower_components/backbone/backbone',
                         'Q': '../../<%= yeoman.app %>/bower_components/q/q',
-                        'async': '../../<%= yeoman.app %>/bower_components/async/dist/async'
+                        'async': '../../<%= yeoman.app %>/bower_components/async/dist/async',
+                        'mammoth': '../../<%= yeoman.app %>/scripts/vendor/mammoth.browser.min'
                     },
                     // TODO: Figure out how to make sourcemaps work with grunt-usemin
                     // https://github.com/yeoman/grunt-usemin/issues/30
