@@ -203,7 +203,7 @@ require([
 
         // Add file object to its parent folder object.
         // Use file's ID as key.
-        tree[folderId].children[file.id] = filePayload;
+        tree[folderId].children.push(filePayload);
 
         return tree;
       }.bind(this);
@@ -221,7 +221,7 @@ require([
           id: folder.id,
           type: 'folder',
           data: folder,
-          children: {}
+          children: []
         };
         return tree;
       }
@@ -334,9 +334,32 @@ require([
   });
 
   var Parser = Backbone.Model.extend({
+    initialize: function () {
+      _.bindAll(this, 'parse');
+    },
+
     parse: function (tree) {
       console.log('[DRIVE-IN] Parsing files tree.');
-      console.log(tree);
+
+      var structure = _.map(tree, function (branch) {
+        if (branch.type === 'file') {
+          return this.cleanUpHtml(branch.html.value);
+        } else if (branch.type == 'folder') {
+          return _.map(branch.children, function (leaf) {
+            return this.cleanUpHtml(leaf.html.value);
+          }.bind(this));
+        }
+      }.bind(this));
+
+      structure = _.compact(structure);
+      console.log(structure);
+      return structure;
+    },
+
+    cleanUpHtml: function (dirtyHtml) {
+      if (!dirtyHtml) return;
+      var cleanHtml = dirtyHtml.replace(/^<p><a id="[^"]*"><\/a>/gi, '<p>');
+      return cleanHtml;
     }
   });
 
@@ -356,8 +379,7 @@ require([
   function gapiClientLoadHandler() {
     filesProcessor
       .retrieveAllFilesInFolder(FOLDER_ID)
-      .then(filesProcessor.processFiles)
-      .done();
+      .then(filesProcessor.processFiles);
   }
 
   Backbone.history.start();
