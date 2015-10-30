@@ -25,7 +25,7 @@
     <!-- layout ctrl handle google api stuff -->
     <div id="drive-starter" ng-cloak ng-controller="starterCtrl">
       <div id="layout" ng-cloak ng-controller="layoutCtrl">
-
+      <div id="menu-container">
         <aside>
           <h1>{{title}}</h1>
           <ul>
@@ -38,6 +38,7 @@
             <li class="{{path == 'about'? 'selected': ''}}"  ng-if="metadata"><a ng-href="#/{{fileId}}/d/about">about</a></li>
           </ul>
         </aside>
+      </div>
 
         <nav id="sections">
               <h1>{{metadata.title}}</h1>

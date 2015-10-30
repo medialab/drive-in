@@ -26,11 +26,13 @@ a:hover{
 
 
 aside{
-  position: fixed;
+  position: absolute;
   top: 0;
-  left:0;
+  left: 0;
   bottom: 0;
   width: 230px;
+  overflow: auto;
+  height: auto;
 }
 
 aside h1{
@@ -84,6 +86,13 @@ nav h1{
   font-size: 15px;
   margin: 15px 0 0 20px;
   color: #999;
+}
+
+#menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
 }
 
 #sections h1 {
