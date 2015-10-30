@@ -14,20 +14,19 @@ angular.module('drivein')
     $log.debug('indexCtrl loaded.');
 
     function clean(html) {
-      html.replace(/<span(.*?)>/g,'')
-            .replace(new RegExp('<p class="[^"]*"><span><\/span><\/p>', 'gi'), '<br>')
-            .replace(/<\/span(.*?)>/g,'')
-            .replace(/name="(.*?)"/g,'')
-            .replace(/style="(.*?)"/g,'')
+      var s = html.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
+                  .replace(/<span(.*?)>/g,'')
+                  .replace(/<\/span(.*?)>/g,'')
+                  .replace(/name="(.*?)"/g,'')
+                  .replace(/style="(.*?)"/g,'')
 
-            .replace(/class="(.*?)"/g,'')
-            .replace(/data-cl=/g, 'class=')
-            .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
+                  .replace(/class="(.*?)"/g,'')
+                  .replace(/data-cl=/g, 'class=')
+                  .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
 
-            .replace(/<p\s+>/g,'<p>');
+                  .replace(/<p\s+>/g,'<p>');
 
-      console.log(html);
-      return html;
+      return s;
     }
 
     // reurn an object
@@ -75,8 +74,6 @@ angular.module('drivein')
       // transform vimeo links inside sections
       transformHref(Q.find('a'), doc);
 
-      console.log(Q.html());
-
       Q.each(function (i, el) {
         var $el = $(el);
 
@@ -89,7 +86,7 @@ angular.module('drivein')
 
         var section = {
           title: $('h1,h2,h3,h4,h5,h6').first().get(),
-          html: $el.html(), // demander à guillaume
+          html: clean($el.html()),
           type: 'text'
         };
 
