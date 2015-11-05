@@ -2,7 +2,7 @@ drive-in
 ========
 
 publish a simple website from a _public_ google drive folder without coding in HTML.
-Only some [markdown syntax](http://daringfireball.net/projects/markdown/syntax) are required for __bod__ or _italic_
+Only some [markdown syntax](http://daringfireball.net/projects/markdown/syntax) are required for __bold__ or _italic_
 Everythiong else is driven by googledocs!
 
 
