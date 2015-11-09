@@ -1,8 +1,6 @@
 /*global require*/
 'use strict';
 
-console.time();
-
 require.config({
   shim: {
   },
@@ -26,7 +24,7 @@ require([
         'https://www.googleapis.com/auth/drive.metadata.readonly',
         'https://www.googleapis.com/auth/drive'
       ],
-      FOLDER_ID = '0BzN4DMSEkyAFUENlamlIUVhDalU',
+      FOLDER_ID = '0B-TbKQu0Nzu6fnpSZ050QktRWU9yMkpQbzExdnBTR1dlUklaTnRLeks1MzM2TUFUcXhOLTA',
       TYPE_FOLDER = 'application/vnd.google-apps.folder',
       TYPE_DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
@@ -105,7 +103,7 @@ require([
     },
 
     retrieveAllFilesInFolder: function (folderId) {
-      console.groupCollapsed('[DRIVE-IN] Attempting to retrieve all files in folder "' + folderId + '".');
+      console.log('[DRIVE-IN] Attempting to retrieve all files in folder "' + folderId + '".');
 
       var deferred,
           retrievePageOfChildren,
@@ -225,17 +223,15 @@ require([
         };
         return tree;
       }
-
-      console.groupEnd();
     },
 
     generateHtmlFromTree(tree) {
-      console.groupCollapsed('[DRIVE-IN] Generating HTML for files in tree.');
+      console.log('[DRIVE-IN] Generating HTML for files in tree.');
 
       var self = this;
 
       var crawlFolder = function (folder) {
-        console.log('[DRIVE-IN] Crawling folder ' + folder.id + '.');
+        console.log('[DRIVE-IN] - crawling folder ' + folder.id + '.');
         var children = folder.children;
         _.each(children, function (child) {
           if (child.type === 'file') {
@@ -328,7 +324,6 @@ require([
         }
       });
 
-      console.groupEnd();
     }
 
   });
@@ -358,10 +353,12 @@ require([
 
     cleanUpHtml: function (dirtyHtml) {
       if (!dirtyHtml) return;
-      var cleanHtml = dirtyHtml.replace(/^<p><a id="[^"]*"><\/a>/gi, '<p>');
+      var cleanHtml = dirtyHtml.replace(/<a id="[^"]*"><\/a>/gi, '');
       return cleanHtml;
     }
   });
+
+  console.groupCollapsed('[DRIVE-IN]');
 
   var auth = new Auth(),
       filesProcessor = new FilesProcessor(),
@@ -385,4 +382,4 @@ require([
   Backbone.history.start();
 });
 
-console.timeEnd();
+console.groupEnd();
