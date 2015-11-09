@@ -29,7 +29,7 @@ angular.module('drivein')
       return s;
     }
 
-    // reurn an object
+    // return an object
     function transformHref(elements, doc) {
       elements.each(function(i, el) {
         var el = $(this),
@@ -83,9 +83,11 @@ angular.module('drivein')
             '<img src="'+img.attr('src')+'" alt="alternative text"/><div data-cl="caption">'+img.attr('title')+'</div><div data-cl="reference">'+img.attr('alt')+'</div>'
           ));
         });
+        var extractedTitle = $el.find('h6').first().text();
+        $el.find('h6').remove();
 
         var section = {
-          title: $('h1,h2,h3,h4,h5,h6').first().get(),
+          title: extractedTitle,
           html: clean($el.html()),
           type: 'text'
         };
