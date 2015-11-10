@@ -211,3 +211,11 @@ line-height: 35px;
 .gdoc img{
   display: inline;
 }
+
+.about-key {
+  font-style: italic;
+}
+
+.about-value {
+  padding-left: 20px;
+}
