@@ -34,5 +34,5 @@ angular.module('drivein')
 
         });
       }
-    }
-  })
+    };
+  });

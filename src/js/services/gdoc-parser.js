@@ -20,15 +20,16 @@ angular.module('drivein')
     // return an object
     function transformHref(elements, doc) {
       elements.each(function(i, el) {
-        var el = $(this),
-            href = el.attr('href')  || '',
+        el = $(this);
+        var href = el.attr('href')  || '',
             is_vimeo = href.match(/vimeo\.com.*?(\d{8,})/),
             is_local = href.match(/^#(.*?)/);
 
         if(is_vimeo) {
-          el.replaceWith($('<div/>',{'data-cl': 'vimeo'}).append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
+          el.replaceWith($('<div/>',{'data-cl': 'vimeo'})
+            .append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
         } else if(is_local) {
-          el.attr('href', 'https://docs.google.com/document/d/' + doc.id + '/' +is_local[0])
+          el.attr('href', 'https://docs.google.com/document/d/' + doc.id + '/' +is_local[0]);
         }
       });
     }

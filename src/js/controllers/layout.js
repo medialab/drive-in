@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name drivein.controller:layoutCtrl
@@ -10,22 +8,19 @@
  */
 angular.module('drivein')
   .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams) {
+    'use strict';
     
-
     $log.debug('layoutCtrl loaded.');
 
     $scope.path = '';
 
     $scope.title = settings.title;
     
-    $scope.folders = []/*
-      {title:'first question',id:'0',slug:'first-q'},
-      {title:'second question',id:'1',slug:'second-q'}
-    ];*/
+    $scope.folders = [];
 
     $scope.docs = [];
 
-    $scope.items; // will contain the item tree of the main folder. Cfr discover
+    $scope.items = []; // will contain the item tree of the main folder. Cfr discover
 
     // parse bibtex and prepare bibliographical data from a bibtex string
     
@@ -36,10 +31,10 @@ angular.module('drivein')
     */
     function mla (bibtex) {
       var bib = new BibtexParser();
-      bib.setInput(bibtex)
+      bib.setInput(bibtex);
       bib.bibtex();
       return bib;
-    };
+    }
 
     /*
       ##function slugify
@@ -53,7 +48,7 @@ angular.module('drivein')
         .replace(/\-\-+/g, '-')         // Replace multiple - with single -
         .replace(/^-+/, '')             // Trim - from start of text
         .replace(/-+$/, '');            // Trim - from end of text
-    };
+    }
 
     /*
       ##function clean_csv_headers
@@ -63,9 +58,9 @@ angular.module('drivein')
       var t = {};
       for(var k in d){
         t[k.replace(/\s/g, '_')] = d[k];
-      };
+      }
       return t;
-    };
+    }
     
     /*
       ##function setPath
@@ -75,7 +70,7 @@ angular.module('drivein')
     */
     $scope.setPath = function(candidate) {
       if(!candidate) { // go home man
-        $log.log('layoutCrtl >>> setPath: <home>')
+        $log.log('layoutCrtl >>> setPath: <home>');
         $scope.path = '';
         $scope.docs = $scope.items.filter(function(d) {
           return d.mimeType == 'application/vnd.google-apps.document';
@@ -84,11 +79,11 @@ angular.module('drivein')
       }
 
       var path = $scope.folders.filter(function(d) {
-        return d.slug == candidate
+        return d.slug == candidate;
       });
 
       if(!path.length) {
-        $log.warn('layoutCtrl >>> setPath, selected path {',candidate,'} does not exists in folders: ',$scope.folders )
+        $log.warn('layoutCtrl >>> setPath, selected path {',candidate,'} does not exists in folders: ',$scope.folders );
         return;
       }
       $log.info('layoutCtrl >>> setPath, loading docs contents of:', candidate);
@@ -101,7 +96,7 @@ angular.module('drivein')
       }).execute(function(res) { // analyse folder
         $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res.kind);
         if(!res.items){
-          $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...')
+          $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...');
           return;
         }
         // set items
@@ -112,10 +107,10 @@ angular.module('drivein')
           .filter(function(d) {
             d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
-            return d.mimeType == 'application/vnd.google-apps.document'
+            return d.mimeType == 'application/vnd.google-apps.document';
           });
         $scope.$apply();
-      })
+      });
     };
 
     /*
@@ -150,7 +145,7 @@ angular.module('drivein')
             // sort by title and change title for EVERY child
             d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
-            return d.mimeType == 'application/vnd.google-apps.folder'
+            return d.mimeType == 'application/vnd.google-apps.folder';
           });
 
         $scope.items = res.items;
@@ -161,7 +156,7 @@ angular.module('drivein')
         });
 
         // get reference from iported csv references
-        var references = res.items.filter(function(d) {
+        references = res.items.filter(function(d) {
           return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1;
         });
 
@@ -182,10 +177,10 @@ angular.module('drivein')
             try{
               $scope.metadata = $.csv.toObjects(res.data).map(clean_csv_headers)[0];
             } catch(e) { // metadata csv is not correct
-              $log.error(e)
+              $log.error(e);
             }
           });
-        };
+        }
 
         if(references.length) {
           for(var i in references) {
@@ -198,7 +193,7 @@ angular.module('drivein')
                 }
               })
             );
-          };
+          }
 
           $q.all(queue).then(function(responses) {
             var r = [];
@@ -210,10 +205,8 @@ angular.module('drivein')
             $scope.references = r;
             $scope.bibliography = true;
           });
-        };
+        }
         $scope.$apply();
-        
-        
       }); // end of request execute
     };
 

@@ -1,4 +1,3 @@
-'use strict';
 
 /**
  * @ngdoc function
@@ -11,8 +10,9 @@
  */
 angular.module('drivein')
   .controller('indexCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser) {
-    $log.debug('indexCtrl loaded.');
+    'use strict';
 
+    $log.debug('indexCtrl loaded.');
 
     // load the given fileId and allow parsing
     $scope.load = function(doc) {
@@ -25,19 +25,19 @@ angular.module('drivein')
          'Authorization': 'Bearer ' + $scope.access_token
         }
       }).then(function(res) {
-        return gdocParser.parse(res.data, doc)
+        return gdocParser.parse(res.data, doc);
       });
-    }
+    };
 
     /*
       ##eventListener $scope.items
       Watch for changements in documents ROOT collection ($scope.items)
     */
     $scope.$watch('items', function(items) { // once items are in place, let's load them if needed
-      if(items){ // the root folder has  benn loaded !
+      if(items){ // the root folder has  been loaded !
         $log.debug('indexCtrl @$scope.items evaluating path in order to load docs');
         $scope.setPath($routeParams.path); // load home documents if path is undefined!
-      };
+      }
     });
 
     /*
@@ -49,12 +49,11 @@ angular.module('drivein')
       $log.log('indexCtrl @app_status', app_status);
       if(app_status != APP_STATUS_READY) {
         return;
-      };
+      }
 
       if($routeParams.folder && $scope.fileId != $routeParams.folder) {
-        $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!')
+        $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!');
         $scope.discover($routeParams.folder);
-      };
-    })
-
-  })
+      }
+    });
+  });
