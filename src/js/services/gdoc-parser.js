@@ -12,7 +12,6 @@ angular.module('drivein')
                   .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
 
                   .replace(/<p\s+>/g,'<p>');
-
       return s;
     }
 
@@ -83,6 +82,18 @@ angular.module('drivein')
             };
 
             result.sections.push(section);
+          });
+
+          return result;
+        },
+
+        parseMetadata: function (fileContents) {
+          var text = clean(fileContents);
+          var body = text.match(/<body[^>]*>(.*?)<\/body>/i);
+          var Q = $('<div/>').append(body.pop());
+          var result = {};
+          Q.find('h3').each(function(res, element) {
+            result[element.textContent] = element.nextSibling.textContent;
           });
 
           return result;
