@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name drivein.controller:pageCtrl
@@ -9,6 +7,8 @@
  */
 angular.module('drivein')
   .controller('pageCtrl', function($scope, $log, $http, $routeParams, $route) {
+    'use strict';
+
     $scope.$parent.path = $route.current.originalPath.split('/').pop();
 
     /*
@@ -19,12 +19,11 @@ angular.module('drivein')
       $log.log('indexCtrl @app_status', app_status);
       if(app_status != APP_STATUS_READY) {
         return;
-      };
+      }
       
       if($routeParams.folder && $scope.fileId != $routeParams.folder) {
-        $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!')
+        $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!');
         $scope.discover($routeParams.folder);
-      };
-    })
-
-  })
+      }
+    });
+  });

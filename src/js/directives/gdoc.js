@@ -27,12 +27,12 @@ angular.module('drivein')
             d.html = $sce.trustAsHtml(d.html);
             return true;
           });
-          //console.log(data.sections, sections)
+          //$log.info(data.sections, sections)
 
           scope.sections = sections;
 
 
         });
       }
-    }
-  })
+    };
+  });

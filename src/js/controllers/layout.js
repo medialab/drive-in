@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name drivein.controller:layoutCtrl
@@ -9,23 +7,20 @@
  * It requires bibtexparser
  */
 angular.module('drivein')
-  .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams) {
+  .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser) {
+    'use strict';
     
-
     $log.debug('layoutCtrl loaded.');
 
     $scope.path = '';
 
     $scope.title = settings.title;
     
-    $scope.folders = []/*
-      {title:'first question',id:'0',slug:'first-q'},
-      {title:'second question',id:'1',slug:'second-q'}
-    ];*/
+    $scope.folders = [];
 
     $scope.docs = [];
 
-    $scope.items; // will contain the item tree of the main folder. Cfr discover
+    $scope.items = []; // will contain the item tree of the main folder. Cfr discover
 
     // parse bibtex and prepare bibliographical data from a bibtex string
     
@@ -36,10 +31,10 @@ angular.module('drivein')
     */
     function mla (bibtex) {
       var bib = new BibtexParser();
-      bib.setInput(bibtex)
+      bib.setInput(bibtex);
       bib.bibtex();
       return bib;
-    };
+    }
 
     /*
       ##function slugify
@@ -53,7 +48,7 @@ angular.module('drivein')
         .replace(/\-\-+/g, '-')         // Replace multiple - with single -
         .replace(/^-+/, '')             // Trim - from start of text
         .replace(/-+$/, '');            // Trim - from end of text
-    };
+    }
 
     /*
       ##function clean_csv_headers
@@ -63,9 +58,85 @@ angular.module('drivein')
       var t = {};
       for(var k in d){
         t[k.replace(/\s/g, '_')] = d[k];
-      };
+      }
       return t;
-    };
+    }
+
+    /*
+      ##function findMetadataItem
+      given a list of files from the drive, return the one that contains
+      general metadata
+      @param items - files in the drive folder among which resides the metadata
+      @param requestedMimeType - mimeType of the metadata file to look for
+    */
+    function findMetadataItem(items, requestedMimeType) {
+      var filteredItems = items.filter(function(item) {
+        return (
+          item.mimeType == requestedMimeType &&
+          item.title.toLowerCase().indexOf('metadata') != -1
+        );
+      });
+      
+      if(!filteredItems.length) {
+        $log.warn('no metadata found for mimeType', requestedMimeType);
+        return null;
+      }
+
+      if(filteredItems.length > 1) {
+        $log.warn('more than one metadata file found, choosing the first one');
+      }
+      return filteredItems[0];
+    }
+
+    function getMetadata(driveData) {
+        var metadataItem = findMetadataItem(driveData.items, 'application/vnd.google-apps.document');
+        if(!metadataItem) {
+          metadataItem = findMetadataItem(driveData.items, 'text/csv');
+        }
+
+        // get metadata from file (there should be only one per drive-in !)
+        if(metadataItem) {
+          var metadataFileUrl;
+          if(metadataItem.mimeType === 'text/csv') {
+            metadataFileUrl = metadataItem.downloadUrl;
+          }
+          else if(metadataItem.mimeType === 'application/vnd.google-apps.document') {
+            metadataFileUrl = metadataItem.exportLinks['text/html'];
+          }
+          else {
+            $log.warn('found a metadata file with unhandled mime type ', metadataItem.mimeType);
+          }
+
+          return $http({
+            url: metadataFileUrl,
+            method: 'GET',
+            headers: {
+             'Authorization': 'Bearer ' + $scope.access_token
+            }
+          })
+            .then(function(response) {
+              var convertedMetadata = null;
+
+              if(metadataItem.mimeType === 'text/csv') {
+                try {
+                  convertedMetadata = $.csv.toObjects(response.data).map(clean_csv_headers)[0];
+                }
+                catch(error) { // metadata csv is not correct
+                  $log.error(error);
+                }
+              }
+              else {
+                try {
+                  convertedMetadata = gdocParser.parseMetadata(response.data);
+                }
+                catch(error) {
+                  $log.error(error);
+                }
+              }
+              return convertedMetadata;
+            });
+        }
+    }
     
     /*
       ##function setPath
@@ -75,7 +146,7 @@ angular.module('drivein')
     */
     $scope.setPath = function(candidate) {
       if(!candidate) { // go home man
-        $log.log('layoutCrtl >>> setPath: <home>')
+        $log.log('layoutCrtl >>> setPath: <home>');
         $scope.path = '';
         $scope.docs = $scope.items.filter(function(d) {
           return d.mimeType == 'application/vnd.google-apps.document';
@@ -84,11 +155,11 @@ angular.module('drivein')
       }
 
       var path = $scope.folders.filter(function(d) {
-        return d.slug == candidate
+        return d.slug == candidate;
       });
 
       if(!path.length) {
-        $log.warn('layoutCtrl >>> setPath, selected path {',candidate,'} does not exists in folders: ',$scope.folders )
+        $log.warn('layoutCtrl >>> setPath, selected path {',candidate,'} does not exists in folders: ',$scope.folders );
         return;
       }
       $log.info('layoutCtrl >>> setPath, loading docs contents of:', candidate);
@@ -97,11 +168,11 @@ angular.module('drivein')
 
       // get documents in folder.
       gapi.client.drive.files.list({
-        q:  '"'+ path.pop().id + '" in parents and trashed = false'
+        q:  '"' + path.pop().id + '" in parents and trashed = false'
       }).execute(function(res) { // analyse folder
         $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res.kind);
         if(!res.items){
-          $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...')
+          $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...');
           return;
         }
         // set items
@@ -112,10 +183,10 @@ angular.module('drivein')
           .filter(function(d) {
             d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
-            return d.mimeType == 'application/vnd.google-apps.document'
+            return d.mimeType == 'application/vnd.google-apps.document';
           });
         $scope.$apply();
-      })
+      });
     };
 
     /*
@@ -150,18 +221,18 @@ angular.module('drivein')
             // sort by title and change title for EVERY child
             d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
-            return d.mimeType == 'application/vnd.google-apps.folder'
+            return d.mimeType == 'application/vnd.google-apps.folder';
           });
 
         $scope.items = res.items;
         
-        // get metadata
-        var metadata = res.items.filter(function(d) {
-          return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('metadata') != -1;
-        });
+        getMetadata(res)
+          .then(function(metadata) {
+            $scope.metadata = metadata;
+          });
 
-        // get reference from iported csv references
-        var references = res.items.filter(function(d) {
+        // get reference from imported csv references
+        references = res.items.filter(function(d) {
           return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1;
         });
 
@@ -169,24 +240,6 @@ angular.module('drivein')
           return d.mimeType == 'text/x-bibtex';
         });
         
-        // get metadata from file (there should be only one per drive-in !)
-        if(metadata.length) { 
-          var met = metadata.pop();
-          $http({
-            url: met.downloadUrl,
-            method: 'GET',
-            headers: {
-             'Authorization': 'Bearer ' + $scope.access_token
-            }
-          }).then(function(res) {
-            try{
-              $scope.metadata = $.csv.toObjects(res.data).map(clean_csv_headers)[0];
-            } catch(e) { // metadata csv is not correct
-              $log.error(e)
-            }
-          });
-        };
-
         if(references.length) {
           for(var i in references) {
             queue.push(
@@ -198,7 +251,7 @@ angular.module('drivein')
                 }
               })
             );
-          };
+          }
 
           $q.all(queue).then(function(responses) {
             var r = [];
@@ -210,10 +263,8 @@ angular.module('drivein')
             $scope.references = r;
             $scope.bibliography = true;
           });
-        };
+        }
         $scope.$apply();
-        
-        
       }); // end of request execute
     };
 

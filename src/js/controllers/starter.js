@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @ngdoc function
  * @name drivein.controller:starterCtrl
@@ -9,6 +7,7 @@
  */
 angular.module('drivein')
   .controller('starterCtrl', function($scope, $log) {
+    'use strict';
        
     $scope.app_status = APP_STATUS_INIT;
 
@@ -29,7 +28,7 @@ angular.module('drivein')
       }, function(res) {
         if (res && !res.error) {
           $scope.setStatus(APP_STATUS_AUTHORIZATION_SUCCESS);
-          $log.info('Authorization confirmed. Access token has been successfully retrieved, requests can be sent to the API.')
+          $log.info('Authorization confirmed. Access token has been successfully retrieved, requests can be sent to the API.');
           
           $scope.access_token = res.access_token;
 
@@ -38,10 +37,10 @@ angular.module('drivein')
           });
         } else {
           $scope.setStatus(APP_STATUS_AUTHORIZATION_REQUIRED);
-          $log.info('No access token could be retrieved, show the button to start the authorization flow.')
+          $log.info('No access token could be retrieved, show the button to start the authorization flow.');
         }
-        $scope.$apply()
-        //console.log(res)
+        $scope.$apply();
+        //$log.log(res)
       });
     };
 
