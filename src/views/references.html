@@ -3,11 +3,21 @@
   <h2>
   references
   </h2>
-  
-  <div ng-repeat="ref in references">
-    <span class="author">{{ref.Author}}</span>
-    <i class="title">{{ref.Title}}</i> 
-    <span class="publisher">{{ref.Publisher}}</span>
-    <span class="publication_year">{{ref.Publication_Year}}</span> 
-  </div>
+
+  <table>
+      <tr ng-repeat="ref in references">
+        <td>
+            <span class="author">{{ref.Author}}</span>
+        </td>
+        <td>
+            <i class="title">{{ref.Title}}</i> 
+        </td>
+        <td>
+            <span class="publisher">{{ref.Publisher}}</span>
+        </td>
+        <td>
+            <span class="publication_year">{{ref.Publication_Year}}</span> 
+        </td>
+      </tr>
+  </table>
 </div>
