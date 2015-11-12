@@ -63,35 +63,44 @@ angular.module('drivein')
     }
 
     /*
-      ##function findMetadataItem
-      given a list of files from the drive, return the one that contains
-      general metadata
-      @param items - files in the drive folder among which resides the metadata
-      @param requestedMimeType - mimeType of the metadata file to look for
+      ##function findItem
+      given a list of files from the drive, return the one that matches specific
+      constraints
+      @param items - files on which the search will be performed
+      @param requestedMimeType - required mimeType for the file
+      @param pattern - substring that must be for in the item name
     */
-    function findMetadataItem(items, requestedMimeType) {
+    function findItem(items, requestedMimeType, pattern) {
       var filteredItems = items.filter(function(item) {
         return (
-          item.mimeType == requestedMimeType &&
-          item.title.toLowerCase().indexOf('metadata') != -1
+          item.mimeType === requestedMimeType &&
+          item.title.toLowerCase().indexOf(pattern.toLowerCase()) != -1
         );
       });
       
       if(!filteredItems.length) {
-        $log.warn('no metadata found for mimeType', requestedMimeType);
+        $log.warn('no', pattern, 'found for mimeType', requestedMimeType);
         return null;
       }
 
       if(filteredItems.length > 1) {
-        $log.warn('more than one metadata file found, choosing the first one');
+        $log.warn('more than one', pattern, 'file found, choosing the first one');
       }
       return filteredItems[0];
     }
 
     function getMetadata(driveData) {
-        var metadataItem = findMetadataItem(driveData.items, 'application/vnd.google-apps.document');
+        var metadataItem = findItem(
+          driveData.items,
+          'application/vnd.google-apps.document',
+          'metadata'
+        );
         if(!metadataItem) {
-          metadataItem = findMetadataItem(driveData.items, 'text/csv');
+          metadataItem = findItem(
+            driveData.items,
+            'text/csv',
+            'metadata'
+          );
         }
 
         // get metadata from file (there should be only one per drive-in !)
@@ -136,6 +145,57 @@ angular.module('drivein')
               return convertedMetadata;
             });
         }
+      return $q(function(resolve) {resolve(null);});
+    }
+
+    /*
+     ##function getReferences
+     retrieves a list of references from the drive's tree data and returns a json
+     @param driveData drive tree data with the list of files in the tree
+    */
+    function getReferences(driveData) {
+      var referenceItem = findItem(
+        driveData.items,
+        'application/vnd.google-apps.spreadsheet',
+        'references'
+      );
+      if(!referenceItem) {
+        referenceItem = findItem(
+          driveData.items,
+          'text/csv',
+          'references'
+        );
+      }
+
+      if(referenceItem) {
+        var referenceFileUrl;
+        if(referenceItem.mimeType === 'text/csv') {
+          referenceFileUrl = referenceItem.downloadUrl;
+        }
+        else if(referenceItem.mimeType === 'application/vnd.google-apps.spreadsheet') {
+          referenceFileUrl = referenceItem.exportLinks['text/csv'];
+        }
+        else {
+          $log.warn(
+            'found a references file with unhandled mime type ',
+            referenceItem.mimeType
+          );
+        }
+        
+        return $http({
+          url: referenceFileUrl,
+          method: 'GET',
+          headers: {
+           'Authorization': 'Bearer ' + $scope.access_token
+          }
+        })
+          .then(function(response) {
+            // transform csv data to js, then clean each csv header
+            return $.csv.toObjects(response.data)
+              .map(clean_csv_headers);
+          });
+      }
+      return $q(function(resolve) {resolve(null);});
     }
     
     /*
@@ -209,10 +269,6 @@ angular.module('drivein')
 
       $log.info('layoutCtrl >>> executing', fileid);
       request.execute(function(res) { // analyse folder 
-        var queue   = [], // queue of $http requests for each bibtext or for wach document
-            references = [],
-            bibtexs = [];
-
         $scope.folders = res.items
           .sort(function(a, b) {
             return a.title.localeCompare(b.title);
@@ -231,39 +287,12 @@ angular.module('drivein')
             $scope.metadata = metadata;
           });
 
-        // get reference from imported csv references
-        references = res.items.filter(function(d) {
-          return d.mimeType == 'text/csv' && d.title.toLowerCase().indexOf('references') != -1;
-        });
-
-        bibtexs = res.items.filter(function(d) {
-          return d.mimeType == 'text/x-bibtex';
-        });
-        
-        if(references.length) {
-          for(var i in references) {
-            queue.push(
-              $http({
-                url: references[i].downloadUrl,
-                method: 'GET',
-                headers: {
-                 'Authorization': 'Bearer ' + $scope.access_token
-                }
-              })
-            );
-          }
-
-          $q.all(queue).then(function(responses) {
-            var r = [];
-            // transform csv data to js, then clean each csv header
-            responses.forEach(function(d) { 
-              r = r.concat($.csv.toObjects(d.data).map(clean_csv_headers));
-            });
-
-            $scope.references = r;
+        getReferences(res)
+          .then(function(references) {
+            $scope.references = references;
             $scope.bibliography = true;
           });
-        }
+
         $scope.$apply();
       }); // end of request execute
     };

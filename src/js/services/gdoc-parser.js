@@ -96,6 +96,15 @@ angular.module('drivein')
           });
 
           return result;
+        },
+
+        parseReferences: function () {
+          return [{
+            Author: 'me',
+            Title: 'How to',
+            Publisher: 'Seuil',
+            Publication_Year: '2015'
+          }];
         }
     };
 });
