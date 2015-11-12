@@ -78,12 +78,12 @@ angular.module('drivein')
       });
       
       if(!filteredItems.length) {
-        console.warn('no metadata found for mimeType', requestedMimeType);
+        $log.warn('no metadata found for mimeType', requestedMimeType);
         return null;
       }
 
       if(filteredItems.length > 1) {
-        console.warn('more than one metadata file found, choosing the first one');
+        $log.warn('more than one metadata file found, choosing the first one');
       }
       return filteredItems[0];
     }
@@ -104,7 +104,7 @@ angular.module('drivein')
             metadataFileUrl = metadataItem.exportLinks['text/html'];
           }
           else {
-            console.warn('found a metadata file with unhandled mime type ', metadataItem.mimeType);
+            $log.warn('found a metadata file with unhandled mime type ', metadataItem.mimeType);
           }
 
           return $http({

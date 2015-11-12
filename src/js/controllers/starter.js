@@ -40,7 +40,7 @@ angular.module('drivein')
           $log.info('No access token could be retrieved, show the button to start the authorization flow.');
         }
         $scope.$apply();
-        //console.log(res)
+        //$log.log(res)
       });
     };
 

@@ -36,7 +36,6 @@ angular.module('drivein')
     return {
         // transform the source text of a googledocument into a json object.
         parse: function (text, doc) {
-          //console.log('parse', doc)
           var body = text.match(/<body[^>]*>(.*?)<\/body>/i),
               Q = $('<div/>').append(body.pop()),
               result = {
