@@ -1,6 +1,6 @@
 {
   "name": "drive-in",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "drive-in ========",
   "main": "settings.js",
   "scripts": {
