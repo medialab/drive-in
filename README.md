@@ -36,13 +36,7 @@ That'is
 In Google Docs, the links between different parts of the same documents are made by [bookmarks](https://support.google.com/docs/answer/45352?hl=en). Drive-in can recognize those links and transform them in html anchor links.
 
 #### "... and if I want to use vimeo videos?"
-This is a markdown magic. Just type in a google doc a __line__ starting with `^^vimeo` followed by the vimeo share link:
-
-	Oh! bla bla bla...
-	
-	^^vimeo http://vimeo.com/38447770
-	
-	Eh! bla bla bla...
+Simply insert a __link__ to your video in the document. It will be converted to an embedded video.
 
 ### configure google analytics
 Thanks to [angularytics](https://github.com/mgonto/angularytics). The google analytics script is executed directly inside index.html. Every step in every angular view is quietly recorded.
