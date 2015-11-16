@@ -9,27 +9,33 @@ Everythiong else is driven by googledocs!
 #### advanced usages
 You can use drive-in in conjunction with [editey](http://www.editey.com/) in order to work directly with html files - with google drive realtime comments and edits. If you decide to use html and personal css files, you must set the folder permission to "publicly visible on the web". 
 
-## How to install: 30 sec. installation
+## How to install
 Drive-in show in a "one page" manner the files and the subfolders of one (public) google drive folder.
 Drive-in generates _menu entries_ from the subfolders list and simply print on screen the google docs contents as html respecting the alphabetic ordering.
 
-Apply for a google public API key, clone the project, copy the file [settings.sample.js](http://) into [settings.js](http://example.com/ ) and modify it according to your needs...
-Voila the default settings :
+- Apply for a google public API key
+- clone the project
+- copy the file [settings.sample.js](http://) into [settings.js](http://example.com/ ) and complete it with your API key
+
+Here are the default settings :
+
+	var settings;
 	
-	'use strict';
-
-	var settings = {
-  		baseUrl: 'https://drive.google.com/folderview?id='// the google drive sharing base url that you do not need to change
-	};
-
-	/*
-	  	Modify according to your own data ...
-	*/
-	settings.apiKey = 'your (public!) api key';
-	settings.defaultFolder = 'your public default folder';
-	settings.title = 'DRIVE-IN'
-
-That'is
+	(function() {
+	    'use strict';
+	
+	    settings = {
+	      title:        'drive-in',
+	      baseurl:       '', // your base url useful for subpath, if any.
+	      sharing_link: 'https://drive.google.com/folderview?id=XXXXYYYYZZZZ&usp=sharing',
+	      CLIENT_ID:    'your (public!) api key',
+	      SCOPES:       'https://www.googleapis.com/auth/drive',
+	    };
+	})();
+	
+- you also need to launch a server that will serve drivein sources (like python -m SimpleHTTPServer or http-server for example)
+- you need to add a host to your /etc/hosts file that will point to your server. This is required because drive's api doesn't allow to be called from localhost.
+- now you can launch your browser at your server's URL and append to it the id of the folder where your drive data resides
 
 ## Q&A
 #### "I want to add a bookmark (internal link) into a google document"
@@ -40,8 +46,3 @@ Simply insert a __link__ to your video in the document. It will be converted to 
 
 ### configure google analytics
 Thanks to [angularytics](https://github.com/mgonto/angularytics). The google analytics script is executed directly inside index.html. Every step in every angular view is quietly recorded.
-
-
-<!--
-#### "How can UI intagrate BIBTEX references?"
-There is a bibtex javascript parser for google docs named . -->
