@@ -1,0 +1,16 @@
+<div id="page" ng-if="metadata">
+    <h2>
+  about
+  </h2>
+    <table>
+        <tr ng-repeat="(key, value) in metadata">
+            <td class="about-key">
+                {{key}}
+            </td>
+            <td class="about-value">
+                 {{value}}
+            </td>
+        </tr>
+    </table>
+</div>
+<div ng-if="!metadata && app_status=='APP_STATUS_READY'">... lacking metadata</div>

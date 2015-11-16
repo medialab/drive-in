@@ -1,15 +1,15 @@
-'use strict';
-/*
-  Modify only in case of emergency
-*/
-var settings = {
-  baseUrl: 'https://drive.google.com/folderview?id=', // the google drive sharing base url
-  partials:'src/partials' // __relative__ basefolder URL for angular partials tamplates
-};
+var settings;
 
-/*
-  Modify according to your own data ...
-*/
-settings.apiKey = 'your (browser public!) google drive api key'; // public google drive api key for browser, restricted to your domain
-settings.defaultFolder = 'your public default folderId';
-settings.title = 'drive-in';
+(function() {
+    'use strict';
+
+    settings = {
+      title:        'drive-in',
+      baseurl:       '', // your base url useful for subpath, if any.
+      
+      sharing_link: 'https://drive.google.com/folderview?id=XXXXYYYYZZZZ&usp=sharing',
+
+      CLIENT_ID:    'YOURCLIENTID.apps.googleusercontent.com',
+      SCOPES:       'https://www.googleapis.com/auth/drive',
+    };
+})();

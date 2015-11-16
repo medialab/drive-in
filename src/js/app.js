@@ -1,67 +1,47 @@
 'use strict';
 
-var mar = new Showdown.converter({ extensions: ['vimeo'] }),
-    bib = new BibtexParser(),
-    mla = function(bibtex) {
-      bib.setInput(bibtex)
-      bib.bibtex();
-      return bib
-    },
-    slugify = function(text) {
-      return text.toString().toLowerCase()
-        .replace(/\s+/g, '-')           // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-        .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-        .replace(/^-+/, '')             // Trim - from start of text
-        .replace(/-+$/, '');            // Trim - from end of text
-    };
+var APP_STATUS_INIT  = 'app_status_init',
 
-    
+    APP_STATUS_BEFORE_AUTHORIZATION    = 'APP_STATUS_BEFORE_AUTHORIZATION',
+    APP_STATUS_AUTHORIZATION_SUCCESS   = 'APP_STATUS_AUTHORIZATION_SUCCESS',
+    APP_STATUS_AUTHORIZATION_REQUIRED  = 'APP_STATUS_AUTHORIZATION_REQUIRED',
+    APP_STATUS_READY                   = 'APP_STATUS_READY',
+    APP_STATUS_DISCOVERING_COMPLETED   = 'APP_STATUS_DISCOVERING_COMPLETED';
 
-angular.module('tipot', [
-  'ngRoute',
-  'ngSanitize',
-  'tipot.controllers',
-  'tipot.services',
-  'tipot.directives',
-  'tipot.filters',
-  'angularytics'
+
+
+angular.module('drivein', [
+  'ngRoute'
 ])
-.config(function(AngularyticsProvider) {
-  AngularyticsProvider.setEventHandlers(['Console', 'GoogleUniversal']);
-})
-.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+  .config(function ($routeProvider, $httpProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl: settings.baseurl + 'src/views/index.html',
+        controller: 'indexCtrl'
+      })
+      
+      .when('/drive-to/:folder', { // set new starting url
+        templateUrl: settings.baseurl + 'src/views/index.html',
+        controller: 'indexCtrl'
+      })
+      .when('/:folder', { // home
+        templateUrl: settings.baseurl + 'src/views/index.html',
+        controller: 'indexCtrl'
+      })
+      .when('/:folder/d/references', {
+        templateUrl: settings.baseurl + 'src/views/references.html',
+        controller: 'pageCtrl'
+      })
+      .when('/:folder/d/about', {
+        templateUrl: settings.baseurl + 'src/views/about.html',
+        controller: 'pageCtrl'
+      })
+      .when('/:folder/:path', { // subpath (1 level max)
+        templateUrl: settings.baseurl + 'src/views/index.html',
+        controller: 'indexCtrl'
+      })
 
-  $routeProvider.when('/', {templateUrl: settings.partials + '/index.html', controller: 'indexCtrl', reloadOnSearch:false});
-  $routeProvider.when('/bibliography', {templateUrl: settings.partials + '/bibliography.html', controller: 'bibCtrl'});
-  
-  $routeProvider.when('/drive-in', {templateUrl: settings.partials + '/drive-in/starter.html', controller: 'driveCtrl'});
-  $routeProvider.when('/drive-in/:folderId', {templateUrl: settings.partials + '/drive-in/index.html', controller: 'driveCtrl'});
-  $routeProvider.when('/drive-in/:folderId/:id', {templateUrl: settings.partials + '/drive-in/index.html', controller: 'drivePageCtrl'});
-  
-
-  $routeProvider.when('/:id', {templateUrl: settings.partials + '/page.html', controller: 'pageCtrl'});
-  
-  $routeProvider.otherwise({redirectTo: '/'});
-
-  $httpProvider.responseInterceptors.push(['$q','$log', function($q, $log) {
-    return function(promise) {
-      return promise.then(function(response) {
-        //$log.info(response);
-        return response; 
-      }, function(response) { // handle error here
-        if (response.status === 401) {
-          response.data = { 
-            status: 'error', 
-            description: 'Authentication required, or TIMEOUT session!'
-          };
-          return response;
-        }
-        return $q.reject(response);
+      .otherwise({
+        redirectTo: '/'
       });
-    };
-  }]);
-}])
-.run(function(Angularytics) {
-    Angularytics.init();
-});
+  });
