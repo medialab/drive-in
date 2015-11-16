@@ -5,6 +5,6 @@
   "source": "https://github.com/medialab/drive-in",
   "licence": "LGPL/CECILL-C",
   "visual": "http://tools.medialab.sciences-po.fr/sciencescape/res/visual",
-  "description": "...",
+  "description": "Publish a simple website from a _public_ google drive folder without coding in HTML",
   "doc": ""
 }
