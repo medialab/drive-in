@@ -16,6 +16,7 @@ angular.module('drivein')
 
     // load the given fileId and allow parsing
     $scope.load = function(doc) {
+      if (doc.title === 'metadata') return;       // Prevent displaying metadata in Homepage.
       $log.info('indexCtrl >>> load ', doc.title);// doc.exportLinks['text/html']);
 
       return $http({
