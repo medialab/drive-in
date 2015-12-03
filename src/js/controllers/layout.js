@@ -9,13 +9,13 @@
 angular.module('drivein')
   .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser) {
     'use strict';
-    
+
     $log.debug('layoutCtrl loaded.');
 
     $scope.path = '';
 
     $scope.title = settings.title;
-    
+
     $scope.folders = [];
 
     $scope.docs = [];
@@ -23,8 +23,8 @@ angular.module('drivein')
     $scope.items = []; // will contain the item tree of the main folder. Cfr discover
 
     // parse bibtex and prepare bibliographical data from a bibtex string
-    
-    
+
+
     /*
       ##function mla
       mla parser. Should be put as service?
@@ -76,7 +76,7 @@ angular.module('drivein')
           item.title.toLowerCase().indexOf('metadata') != -1
         );
       });
-      
+
       if(!filteredItems.length) {
         $log.warn('no metadata found for mimeType', requestedMimeType);
         return null;
@@ -133,11 +133,18 @@ angular.module('drivein')
                   $log.error(error);
                 }
               }
+
+              // /!\ Hack to fix Angular bad habit of sorting alphabetically.
+              // What a horrible piece of software.
+              // @see https://github.com/angular/angular.js/issues/6210
+              // @see http://stackoverflow.com/questions/19676694/ng-repeat-directive-sort-the-data-when-using-key-value
+              convertedMetadata = { keys: Object.keys(convertedMetadata), raw: convertedMetadata };
+
               return convertedMetadata;
             });
         }
     }
-    
+
     /*
       ##function setPath
       Set the current path, loading children via google api.
@@ -163,7 +170,7 @@ angular.module('drivein')
         return;
       }
       $log.info('layoutCtrl >>> setPath, loading docs contents of:', candidate);
-        
+
       $scope.path = candidate;
 
       // get documents in folder.
@@ -202,13 +209,13 @@ angular.module('drivein')
     $scope.discover = function(fileid) {
       $log.info('layoutCtrl >>> discover', fileid);
       $scope.fileId = fileid; // root folder
-      
+
       var request = gapi.client.drive.files.list({
         q:  '"'+ fileid + '" in parents and trashed = false'
       });
 
       $log.info('layoutCtrl >>> executing', fileid);
-      request.execute(function(res) { // analyse folder 
+      request.execute(function(res) { // analyse folder
         var queue   = [], // queue of $http requests for each bibtext or for wach document
             references = [],
             bibtexs = [];
@@ -217,7 +224,7 @@ angular.module('drivein')
           .sort(function(a, b) {
             return a.title.localeCompare(b.title);
           })
-          .filter(function(d) { 
+          .filter(function(d) {
             // sort by title and change title for EVERY child
             d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
@@ -225,7 +232,7 @@ angular.module('drivein')
           });
 
         $scope.items = res.items;
-        
+
         getMetadata(res)
           .then(function(metadata) {
             $scope.metadata = metadata;
@@ -239,7 +246,7 @@ angular.module('drivein')
         bibtexs = res.items.filter(function(d) {
           return d.mimeType == 'text/x-bibtex';
         });
-        
+
         if(references.length) {
           for(var i in references) {
             queue.push(
@@ -256,7 +263,7 @@ angular.module('drivein')
           $q.all(queue).then(function(responses) {
             var r = [];
             // transform csv data to js, then clean each csv header
-            responses.forEach(function(d) { 
+            responses.forEach(function(d) {
               r = r.concat($.csv.toObjects(d.data).map(clean_csv_headers));
             });
 
