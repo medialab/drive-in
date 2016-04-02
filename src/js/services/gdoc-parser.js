@@ -1,17 +1,39 @@
-angular.module('drivein')
+String.prototype.replaceAll = function (find, replace) {
+    var str = this;
+    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+};
+
+angular
+  .module('drivein')
   .service('gdocParser', function() {
+    function reduce(input, rgx, replacement) {
+      var found, output = input;
+
+      while (found = rgx.exec(input)) {
+        output = output.replaceAll(found[1], replacement);
+      }
+
+      return output;
+    };
+
     function clean(html) {
-      var s = html.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
-                  .replace(/<span(.*?)>/g,'')
-                  .replace(/<\/span(.*?)>/g,'')
-                  .replace(/name="(.*?)"/g,'')
-                  .replace(/style="(.*?)"/g,'')
+      // Reduce text to version where `<span class="c5">...</span>` becomes `<em>...</span>`,
+      // then pass this transformed text to another reducer making it `<em>...</em>`,
+      // effectively enabling italic text.
+      var openingRgx = /(<span\s{1}class=\"c\d+\">)[^<]+(?:<\/span>)/gim,
+          closingRgx = /(?:<em>)[^<]+(<\/span>)/gim;
 
-                  .replace(/class="(.*?)"/g,'')
-                  .replace(/data-cl=/g, 'class=')
-                  .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
+      var em = reduce(reduce(html, openingRgx, '<em>'), closingRgx, '</em>');
+      var s = em.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
+                .replace(/<span(.*?)>/g,'')
+                .replace(/<\/span(.*?)>/g,'')
+                .replace(/name="(.*?)"/g,'')
+                .replace(/style="(.*?)"/g,'')
+                .replace(/class="(.*?)"/g,'')
+                .replace(/data-cl=/g, 'class=')
+                .replace(/<table(.*?)>/g, function(d, attrs){ return '<table class="table" ' + attrs + '>';})
+                .replace(/<p\s+>/g,'<p>');
 
-                  .replace(/<p\s+>/g,'<p>');
       return s;
     }
 
