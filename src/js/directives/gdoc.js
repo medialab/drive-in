@@ -35,7 +35,8 @@ angular.module('drivein')
             var $gdoc = $(element.find('.gdoc'));
             var $sup = $gdoc.find('sup');
             if ($sup.length > 0) {
-              var OFFSET = 20;
+              var GUTTER_OFFSET = 20;
+              var NOTE_HEIGHT_OFFSET = 10;
               var rawSidenotes = $gdoc.find('.contents div');
 
               var sidenotes = [];
@@ -50,14 +51,35 @@ angular.module('drivein')
                 }
               });
 
+              // Several refs in the same parag will overlap.
+              // Store handy references enabling visual stacking to fix overlap if it happens.
+              var $lastReferencedParagraph;
+              var lastNoteHeight = 0;
+
+              // Position each note to the right gutter next to referencing paragraph.
               sidenotes.forEach(function (n) {
                 var $s = $($sup.get(n.index));
                 var $note = $(n.note);
                 var $parag = $s.parent();
                 var paragOffset = $parag.offset();
+
+                // Compare current reference paragraph with the one referencing the previous note.
+                // If they are the same, ensure notes don't overlap.
+                if ($lastReferencedParagraph) {
+                  if ($lastReferencedParagraph.get(0) == $parag.get(0)) {
+                    paragOffset.top += lastNoteHeight + NOTE_HEIGHT_OFFSET;
+                  }
+                }
+
                 $note.addClass('sidenote');
-                $note.offset({top: paragOffset.top, left: paragOffset.left + $parag.parent().width() + OFFSET});
+                $note.offset({top: paragOffset.top, left: paragOffset.left + $parag.parent().width() + GUTTER_OFFSET});
+
+                $lastReferencedParagraph = $parag;
+                lastNoteHeight = $note.height()
               });
+
+              $lastReferencedParagraph = null;
+              lastNoteHeight = null;
             }
           }, 0);
         });
