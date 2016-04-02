@@ -16,14 +16,38 @@ angular
       return output;
     };
 
+    function prepareSidenotes(input) {
+      var found, output = input;
+
+      // Find references in text.
+      // i.e. tag with id="cmnt_refX" where X is a number matching
+      // with a number used in the name of the referred comment.
+      var rgx = /(<sup><a (href=\".[^\"]+"))(?:.+)(id=\"cmnt_ref(\d+)\")/gim;
+      while (found = rgx.exec(input)) {
+        // Transform reference in ID into a anchored link to Sidenote.
+        output = output.replaceAll(
+          found[3], 'data-sidenote="cmnt' + found[4] + '"'
+        );
+
+        // Remove possible existing href on element.
+        output = output.replaceAll(found[2], 'href="#"')
+      }
+
+      return output;
+    }
+
     function clean(html) {
+      // Comments on gDoc create special tags. Find tags for both the reference in text and
+      // the referred comment. Store them. We use this methodology to specify sidenotes.
+      var sidenoted = prepareSidenotes(html);
+
       // Reduce text to version where `<span class="c5">...</span>` becomes `<em>...</span>`,
       // then pass this transformed text to another reducer making it `<em>...</em>`,
       // effectively enabling italic text.
       var openingRgx = /(<span\s{1}class=\"c\d+\">)[^<]+(?:<\/span>)/gim,
           closingRgx = /(?:<em>)[^<]+(<\/span>)/gim;
 
-      var em = reduce(reduce(html, openingRgx, '<em>'), closingRgx, '</em>');
+      var em = reduce(reduce(sidenoted, openingRgx, '<em>'), closingRgx, '</em>');
       var s = em.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
                 .replace(/<span(.*?)>/g,'')
                 .replace(/<\/span(.*?)>/g,'')
@@ -43,14 +67,14 @@ angular
       elements.each(function(i, el) {
         el = $(this);
         var href = el.attr('href')  || '',
-            is_vimeo = href.match(/vimeo\.com.*?(\d{8,})/),
-            is_local = href.match(/^#(.*?)/);
+            isVimeo = href.match(/vimeo\.com.*?(\d{8,})/),
+            isLocal = href.match(/^#(.*?)/);
 
-        if(is_vimeo) {
+        if(isVimeo) {
           el.replaceWith($('<div/>',{'data-cl': 'vimeo'})
-            .append('<iframe src="//player.vimeo.com/video/'+ is_vimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
-        } else if(is_local) {
-          el.attr('href', 'https://docs.google.com/document/d/' + doc.id + '/' +is_local[0]);
+            .append('<iframe src="//player.vimeo.com/video/'+ isVimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
+        } else if(isLocal) {
+          el.attr('href', 'https://docs.google.com/document/d/' + doc.id + '/' +isLocal[0]);
         }
       });
     }

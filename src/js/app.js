@@ -19,7 +19,6 @@ angular.module('drivein', [
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'
       })
-      
       .when('/drive-to/:folder', { // set new starting url
         templateUrl: settings.baseurl + 'src/views/index.html',
         controller: 'indexCtrl'

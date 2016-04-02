@@ -113,8 +113,7 @@ angular.module('drivein')
             headers: {
              'Authorization': 'Bearer ' + $scope.access_token
             }
-          })
-            .then(function(response) {
+          }).then(function(response) {
               var convertedMetadata = null;
 
               if(metadataItem.mimeType === 'text/csv') {

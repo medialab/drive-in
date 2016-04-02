@@ -9,15 +9,13 @@
  *
  */
 angular.module('drivein')
-  .controller('indexCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser) {
+  .controller('indexCtrl', function($scope, $log, $http, $q, $routeParams, $rootScope, gdocParser) {
     'use strict';
-
-    $log.debug('indexCtrl loaded.');
 
     // load the given fileId and allow parsing
     $scope.load = function(doc) {
       if (doc.title === 'metadata') return;       // Prevent displaying metadata in Homepage.
-      $log.info('indexCtrl >>> load ', doc.title);// doc.exportLinks['text/html']);
+      //$log.info('indexCtrl >>> load ', doc.title);// doc.exportLinks['text/html']);
 
       return $http({
         url: doc.exportLinks['text/html'],
@@ -36,7 +34,6 @@ angular.module('drivein')
     */
     $scope.$watch('items', function(items) { // once items are in place, let's load them if needed
       if(items){ // the root folder has  been loaded !
-        $log.debug('indexCtrl @$scope.items evaluating path in order to load docs');
         $scope.setPath($routeParams.path); // load home documents if path is undefined!
       }
     });
@@ -47,13 +44,12 @@ angular.module('drivein')
       This allow to load folder content and start the parsing chain.
     */
     $scope.$watch('app_status', function(app_status){
-      $log.log('indexCtrl @app_status', app_status);
+      //$log.log('indexCtrl @app_status', app_status);
       if(app_status != APP_STATUS_READY) {
         return;
       }
 
       if($routeParams.folder && $scope.fileId != $routeParams.folder) {
-        $log.log('indexCtrl @app_status', app_status, 'let us discover new contents!');
         $scope.discover($routeParams.folder);
       }
     });
