@@ -45,6 +45,7 @@ angular.module('drivein')
                 // indexAt(3). Find * at indexAt(3) to consider it a sidenote,
                 // otherwise remove it from DOM.
                 if (note.innerText.indexOf('*') === 3) {
+                  note.innerText = note.innerText.replace('*', '');
                   sidenotes.push({index: i, note: note});
                 } else {
                   $(note).remove();
