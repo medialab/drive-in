@@ -12,7 +12,7 @@ var APP_STATUS_INIT  = 'app_status_init',
 
 angular.module('drivein', [
   'ngRoute'
-])
+]).constant('METADATA_FILE', ['metadata', 'crédits', 'credits'])
   .config(function ($routeProvider, $httpProvider) {
     $routeProvider
       .when('/', {

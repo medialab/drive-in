@@ -7,10 +7,8 @@
  * It requires bibtexparser
  */
 angular.module('drivein')
-  .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser) {
+  .controller('layoutCtrl', function($scope, $log, $http, $q, $routeParams, gdocParser, METADATA_FILE) {
     'use strict';
-
-    $log.debug('layoutCtrl loaded.');
 
     $scope.path = '';
 
@@ -51,10 +49,10 @@ angular.module('drivein')
     }
 
     /*
-      ##function clean_csv_headers
+      ##function cleanCSVHeaders
       given a javascript dict, clean its keys in order to be flushed into the template
     */
-    function clean_csv_headers(d){
+    function cleanCSVHeaders(d){
       var t = {};
       for(var k in d){
         t[k.replace(/\s/g, '_')] = d[k];
@@ -62,18 +60,22 @@ angular.module('drivein')
       return t;
     }
 
-    /*
-      ##function findMetadataItem
-      given a list of files from the drive, return the one that contains
-      general metadata
-      @param items - files in the drive folder among which resides the metadata
-      @param requestedMimeType - mimeType of the metadata file to look for
-    */
+    /**
+     * Given a list of files in the Drive, find the one holding metadata.
+     * Search is based on case-insensitive file naming: "metadata", "crédits", "credits".
+     * Strings are compared using a substring of the filename, to include edge cases
+     * where file is misnamed (e.g. "metadata(1).csv").
+     *
+     * @param  {Array}  items             Files in Drive.
+     * @param  {string} requestedMimeType File MIMEType used to narrow down search.
+     * @return {Object} The metadata file.
+     */
     function findMetadataItem(items, requestedMimeType) {
       var filteredItems = items.filter(function(item) {
+        var names = METADATA_FILE.join(' ');
         return (
           item.mimeType == requestedMimeType &&
-          item.title.toLowerCase().indexOf('metadata') != -1
+          names.indexOf(item.title.toLowerCase().substring(0, 7)) > -1
         );
       });
 
@@ -118,7 +120,7 @@ angular.module('drivein')
 
               if(metadataItem.mimeType === 'text/csv') {
                 try {
-                  convertedMetadata = $.csv.toObjects(response.data).map(clean_csv_headers)[0];
+                  convertedMetadata = $.csv.toObjects(response.data).map(cleanCSVHeaders)[0];
                 }
                 catch(error) { // metadata csv is not correct
                   $log.error(error);
@@ -142,6 +144,10 @@ angular.module('drivein')
               return convertedMetadata;
             });
         }
+
+        throw new Error(
+          'Medata file was not found. Ensure a file named "metadata", "crédits" or "credits" exists.'
+        );
     }
 
     /*
@@ -263,7 +269,7 @@ angular.module('drivein')
             var r = [];
             // transform csv data to js, then clean each csv header
             responses.forEach(function(d) {
-              r = r.concat($.csv.toObjects(d.data).map(clean_csv_headers));
+              r = r.concat($.csv.toObjects(d.data).map(cleanCSVHeaders));
             });
 
             $scope.references = r;

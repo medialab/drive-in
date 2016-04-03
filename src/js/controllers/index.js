@@ -9,13 +9,16 @@
  *
  */
 angular.module('drivein')
-  .controller('indexCtrl', function($scope, $log, $http, $q, $routeParams, $rootScope, gdocParser) {
+  .controller('indexCtrl', function($scope, $log, $http, $q, $routeParams, $rootScope, gdocParser, METADATA_FILE) {
     'use strict';
 
-    // load the given fileId and allow parsing
+    // Load the given fileId and allow parsing.
     $scope.load = function(doc) {
-      if (doc.title === 'metadata') return;       // Prevent displaying metadata in Homepage.
-      //$log.info('indexCtrl >>> load ', doc.title);// doc.exportLinks['text/html']);
+      // Prevent displaying metadata in Homepage.
+      var metadataNames = METADATA_FILE.join(' ');
+      if (metadataNames.indexOf(doc.title.toLowerCase().substring(0, 7)) > -1) {
+        return;
+      }
 
       return $http({
         url: doc.exportLinks['text/html'],
