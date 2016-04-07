@@ -19,6 +19,8 @@ angular.module('drivein')
         $log.log('directive gdoc, loading google doc:', scope.doc.title);
         // get my message
         scope.load({doc: scope.doc}).then(function(data){
+          if (!data) return;
+
           scope.title = $sce.trustAsHtml(data.title);
           scope.subtitle = $sce.trustAsHtml(data.subtitle);
           scope.html = $sce.trustAsHtml(data.html);

@@ -15,9 +15,12 @@ angular.module('drivein')
     // Load the given fileId and allow parsing.
     $scope.load = function(doc) {
       // Prevent displaying metadata in Homepage.
+      // A promise is expected elswhere from this code, so return
+      // an empty one to avoid breaking the chain of expectations.
       var metadataNames = METADATA_FILE.join(' ');
       if (metadataNames.indexOf(doc.title.toLowerCase().substring(0, 7)) > -1) {
-        return;
+        var emptyPromise = $.Deferred();
+        return emptyPromise.resolve(null);
       }
 
       return $http({
