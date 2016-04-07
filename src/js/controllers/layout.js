@@ -146,7 +146,7 @@ angular.module('drivein')
         }
 
         throw new Error(
-          'Medata file was not found. Ensure a file named "metadata", "crédits" or "credits" exists.'
+          'Metadata file was not found. Ensure a file named "metadata", "crédits" or "credits" exists.'
         );
     }
 
@@ -158,7 +158,6 @@ angular.module('drivein')
     */
     $scope.setPath = function(candidate) {
       if(!candidate) { // go home man
-        $log.log('layoutCrtl >>> setPath: <home>');
         $scope.path = '';
         $scope.docs = $scope.items.filter(function(d) {
           return d.mimeType == 'application/vnd.google-apps.document';
@@ -171,10 +170,8 @@ angular.module('drivein')
       });
 
       if(!path.length) {
-        $log.warn('layoutCtrl >>> setPath, selected path {',candidate,'} does not exists in folders: ',$scope.folders );
         return;
       }
-      $log.info('layoutCtrl >>> setPath, loading docs contents of:', candidate);
 
       $scope.path = candidate;
 
@@ -182,9 +179,7 @@ angular.module('drivein')
       gapi.client.drive.files.list({
         q:  '"' + path.pop().id + '" in parents and trashed = false'
       }).execute(function(res) { // analyse folder
-        $log.log('layoutCtrl >>> setPath gapi.client.drive.files.list done for:', candidate, 'received:', res.kind);
         if(!res.items){
-          $log.warn('layoutCtrl >>> setPath gapi.client.drive.files.list does not contain items...');
           return;
         }
         // set items
@@ -212,7 +207,6 @@ angular.module('drivein')
       @param fileid - google drive sharing link
     */
     $scope.discover = function(fileid) {
-      $log.info('layoutCtrl >>> discover', fileid);
       $scope.fileId = fileid; // root folder
 
       var request = gapi.client.drive.files.list({
@@ -252,7 +246,7 @@ angular.module('drivein')
           return d.mimeType == 'text/x-bibtex';
         });
 
-        if(references.length) {
+        if (references.length) {
           for(var i in references) {
             queue.push(
               $http({
@@ -281,14 +275,9 @@ angular.module('drivein')
     };
 
     $scope.$on('GOOGLE_API_LOADED', function() {
-      $log.debug('layoutCtrl @GOOGLE_API_LOADED');
 
       var link = settings.sharing_link.match(/id=([a-zA-Z0-9]+)/),
           fileid;
-
-      if(!link){
-        $log.debug('layoutCtrl @GOOGLE_API_LOADED');
-      }
 
       $scope.setStatus(APP_STATUS_READY);
       $scope.$apply();

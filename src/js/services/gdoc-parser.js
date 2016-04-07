@@ -20,13 +20,13 @@ angular
       var found, output = input;
 
       // Find references in text.
-      // i.e. tag with id="cmnt_refX" where X is a number matching
-      // with a number used in the name of the referred comment.
-      var rgx = /(<sup><a (href=\".[^\"]+"))(?:.+)(id=\"cmnt_ref(\d+)\")/gim;
+      // i.e. tag with id="ftnt_refX" where X is a number matching
+      // with a number used in the name of the referred footnoote.
+      var rgx = /(<sup><a (href=\".[^\"]+"))(?:.+)(id=\"ftnt_ref(\d+)\")/gim;
       while (found = rgx.exec(input)) {
         // Transform reference in ID into a anchored link to Sidenote.
         output = output.replaceAll(
-          found[3], 'data-sidenote="cmnt' + found[4] + '"'
+          found[3], 'data-sidenote="ftnt' + found[4] + '"'
         );
 
         // Remove possible existing href on element.
@@ -40,6 +40,8 @@ angular
       // Comments on gDoc create special tags. Find tags for both the reference in text and
       // the referred comment. Store them. We use this methodology to specify sidenotes.
       var sidenoted = prepareSidenotes(html);
+
+      console.log(html)
 
       // Reduce text to version where `<span class="c5">...</span>` becomes `<em>...</span>`,
       // then pass this transformed text to another reducer making it `<em>...</em>`,

@@ -16,7 +16,7 @@ angular.module('drivein')
         load: '&'
       },
       link: function postLink(scope, element, attrs) {
-        //$log.log('directive gdoc, loading google doc:', scope.doc.title);
+        $log.log('directive gdoc, loading google doc:', scope.doc.title);
         // get my message
         scope.load({doc: scope.doc}).then(function(data){
           scope.title = $sce.trustAsHtml(data.title);
@@ -35,17 +35,14 @@ angular.module('drivein')
             var $gdoc = $(element.find('.gdoc'));
             var $sup = $gdoc.find('sup');
             if ($sup.length > 0) {
-              var GUTTER_OFFSET = 20;
+              var GUTTER_OFFSET = 15;
               var NOTE_HEIGHT_OFFSET = 10;
               var rawSidenotes = $gdoc.find('.contents div');
+              console.log(rawSidenotes)
 
               var sidenotes = [];
               rawSidenotes.each(function (i, note) {
-                // HTML output starts with "[X]", so the actual comment is at
-                // indexAt(3). Find * at indexAt(3) to consider it a sidenote,
-                // otherwise remove it from DOM.
-                if (note.innerText.indexOf('*') === 3) {
-                  note.innerText = note.innerText.replace('*', '');
+                if (note.innerText.match(/\[\d+\]/gim)) {
                   sidenotes.push({index: i, note: note});
                 } else {
                   $(note).remove();
