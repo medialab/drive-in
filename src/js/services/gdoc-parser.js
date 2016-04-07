@@ -68,14 +68,10 @@ angular
     function transformHref(elements, doc) {
       elements.each(function(i, el) {
         el = $(this);
-        var href = el.attr('href')  || '',
-            isVimeo = href.match(/vimeo\.com.*?(\d{8,})/),
+        var href = el.attr('href')  || ''
             isLocal = href.match(/^#(.*?)/);
 
-        if(isVimeo) {
-          el.replaceWith($('<div/>',{'data-cl': 'vimeo'})
-            .append('<iframe src="//player.vimeo.com/video/'+ isVimeo[1] +'" width="100%" height="320" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'));
-        } else if(isLocal) {
+        if (isLocal) {
           el.attr('href', 'https://docs.google.com/document/d/' + doc.id + '/' +isLocal[0]);
         }
       });
