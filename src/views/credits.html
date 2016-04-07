@@ -1,13 +1,14 @@
 <div id="page" ng-if="metadata">
-  <h2>
-  Credits
+  <h2 ng-if="metadata">
+    <span ng-if="metadata.raw.lang === 'fr'">Crédits</span>
+    <span ng-if="metadata.raw.lang !== 'fr'">Credits</span>
   </h2>
     <table>
         <tr ng-repeat="key in metadata.keys">
-            <td class="about-key">
+            <td class="about-key" ng-if="key.trim().toLowerCase() !== 'lang' && key.trim().toLowerCase() !== 'langue'">
                 {{key | lowercase}}
             </td>
-            <td class="about-value">
+            <td class="about-value" ng-if="key.trim().toLowerCase() !== 'lang' && key.trim().toLowerCase() !== 'langue'">
                  {{metadata.raw[key]}}
             </td>
         </tr>

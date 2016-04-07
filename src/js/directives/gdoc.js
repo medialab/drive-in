@@ -16,8 +16,6 @@ angular.module('drivein')
         load: '&'
       },
       link: function postLink(scope, element, attrs) {
-        $log.log('directive gdoc, loading google doc:', scope.doc.title);
-        // get my message
         scope.load({doc: scope.doc}).then(function(data){
           if (!data) return;
 

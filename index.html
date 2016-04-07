@@ -30,25 +30,29 @@
         <aside>
           <h1>{{title}}</h1>
           <ul>
-            <li class="{{path == ''? 'selected': ''}}" ><a ng-href="#/{{fileId}}">index</a></li>
+            <li class="{{path == ''? 'selected': ''}}"  ng-if="metadata">
+              <a ng-if="metadata.raw.lang === 'fr'" ng-href="#/{{fileId}}">Accueil</a>
+              <a ng-if="metadata.raw.lang !== 'fr'" ng-href="#/{{fileId}}">Home</a>
+            </li>
             <li ng-repeat="folder in folders" class="{{path == folder.slug? 'selected': ''}}">
               <a ng-href="#/{{fileId}}/{{folder.slug}}">{{folder.title}}</a>
             </li>
             <li>&nbsp;</li>
-            <li class="{{path == 'references'? 'selected': ''}}"  ng-if="bibliography"><a ng-href="#/{{fileId}}/d/references">references</a></li>
-            <li class="{{path == 'credits'? 'selected': ''}}"  ng-if="metadata"><a ng-href="#/{{fileId}}/d/credits">credits</a></li>
+            <li class="{{path == 'references'? 'selected': ''}}" ng-if="bibliography && metadata">
+              <a ng-if="metadata.raw.lang === 'fr'" ng-href="#/{{fileId}}/d/references">Réferences</a>
+              <a ng-if="metadata.raw.lang !== 'fr'" ng-href="#/{{fileId}}/d/references">References</a>
+            </li>
+            <li class="{{path == 'credits'? 'selected': ''}}" ng-if="metadata">
+              <a ng-if="metadata.raw.lang === 'fr'" ng-href="#/{{fileId}}/d/credits">Crédits</a>
+              <a ng-if="metadata.raw.lang !== 'fr'" ng-href="#/{{fileId}}/d/credits">Credits</a>
+            </li>
           </ul>
         </aside>
       </div>
 
         <nav id="sections">
-              <h1>{{metadata.raw[metadata.keys[0]]}}</h1>
-              <!-- ul>
-                <li ng-repeat="doc in docs">
-                  {{doc.title}}
-                </li>
-              </ul -->
-            </nav>
+          <h1>{{metadata.raw[metadata.keys[0]]}}</h1>
+        </nav>
 
         <div id="wrapper">
           <div class="inner">
