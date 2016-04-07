@@ -140,7 +140,6 @@ angular.module('drivein')
               // @see https://github.com/angular/angular.js/issues/6210
               // @see http://stackoverflow.com/questions/19676694/ng-repeat-directive-sort-the-data-when-using-key-value
               convertedMetadata = { keys: Object.keys(convertedMetadata), raw: convertedMetadata };
-
               return convertedMetadata;
             });
         }

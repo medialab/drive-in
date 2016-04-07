@@ -5,7 +5,7 @@
     <table>
         <tr ng-repeat="key in metadata.keys">
             <td class="about-key">
-                {{key}}
+                {{key | lowercase}}
             </td>
             <td class="about-value">
                  {{metadata.raw[key]}}

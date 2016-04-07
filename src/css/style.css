@@ -214,6 +214,7 @@ line-height: 35px;
 
 .about-key {
   font-style: italic;
+  text-transform: capitalize;
 }
 
 .about-value {
