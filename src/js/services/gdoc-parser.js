@@ -152,9 +152,8 @@ angular
           var Q = $('<div/>').append(body.pop());
           var result = {};
           Q.find('h3').each(function(res, element) {
-            result[element.textContent] = element.nextSibling.textContent;
+            result[element.textContent.trim().toLowerCase()] = element.nextSibling.textContent;
           });
-
           return result;
         }
     };
