@@ -59,8 +59,6 @@ angular
       var sidenoted = prepareSidenotes(html);
       var embeddified = embeddify(sidenoted);
 
-      console.log(embeddified)
-
       // Reduce text to version where `<span class="c5">...</span>` becomes `<em>...</span>`,
       // then pass this transformed text to another reducer making it `<em>...</em>`,
       // effectively enabling italic text.

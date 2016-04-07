@@ -38,7 +38,6 @@ angular.module('drivein')
               var GUTTER_OFFSET = 15;
               var NOTE_HEIGHT_OFFSET = 10;
               var rawSidenotes = $gdoc.find('.contents div');
-              console.log(rawSidenotes)
 
               var sidenotes = [];
               rawSidenotes.each(function (i, note) {
