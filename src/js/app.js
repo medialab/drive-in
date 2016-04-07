@@ -31,8 +31,8 @@ angular.module('drivein', [
         templateUrl: settings.baseurl + 'src/views/references.html',
         controller: 'pageCtrl'
       })
-      .when('/:folder/d/about', {
-        templateUrl: settings.baseurl + 'src/views/about.html',
+      .when('/:folder/d/credits', {
+        templateUrl: settings.baseurl + 'src/views/credits.html',
         controller: 'pageCtrl'
       })
       .when('/:folder/:path', { // subpath (1 level max)
