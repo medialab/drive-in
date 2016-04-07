@@ -225,7 +225,7 @@ angular.module('drivein')
           })
           .filter(function(d) {
             // sort by title and change title for EVERY child
-            d.title = d.title.replace(/[\d\s]+/,''); // replace the very first occurrence of numbers
+            d.title = d.title.replace(/[\d\s]{0,2}/,''); // replace the very first occurrence of numbers
             d.slug = slugify(d.title || d.id);
             return d.mimeType == 'application/vnd.google-apps.folder';
           });
