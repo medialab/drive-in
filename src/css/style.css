@@ -226,3 +226,17 @@ line-height: 35px;
   font-style: italic;
   line-height: 15px;
 }
+
+.logo-forccast {
+  width: 342px;
+  height: 54px;
+  background: url(../img/logo-forccast.png) no-repeat -12px 0px;
+  display: block;
+}
+
+.logo-medialab {
+  width: 206px;
+  height: 38px;
+  background: url(../img/logo-medialab.png) no-repeat;
+  display: block;
+}
