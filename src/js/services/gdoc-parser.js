@@ -36,12 +36,30 @@ angular
       return output;
     }
 
+    function embeddify(input) {
+      function decodeHtml (input) {
+        var t = document.createElement('textarea');
+        t.innerHTML = input;
+        return t.value;
+      }
+
+      var found, output = input;
+      var rgx = /(?:&lt;iframe\s)(?:.+)(?:\/iframe&gt;)/gi;
+      while (found = rgx.exec(input)) {
+        var encodedIframe = found[0];
+        iframe = decodeHtml(encodedIframe);
+        output = output.replaceAll(encodedIframe, iframe);
+      }
+      return output;
+    }
+
     function clean(html) {
       // Comments on gDoc create special tags. Find tags for both the reference in text and
       // the referred comment. Store them. We use this methodology to specify sidenotes.
       var sidenoted = prepareSidenotes(html);
+      var embeddified = embeddify(sidenoted);
 
-      console.log(html)
+      console.log(embeddified)
 
       // Reduce text to version where `<span class="c5">...</span>` becomes `<em>...</span>`,
       // then pass this transformed text to another reducer making it `<em>...</em>`,
@@ -49,7 +67,7 @@ angular
       var openingRgx = /(<span\s{1}class=\"c\d+\">)[^<]+(?:<\/span>)/gim,
           closingRgx = /(?:<em>)[^<]+(<\/span>)/gim;
 
-      var em = reduce(reduce(sidenoted, openingRgx, '<em>'), closingRgx, '</em>');
+      var em = reduce(reduce(embeddified, openingRgx, '<em>'), closingRgx, '</em>');
       var s = em.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
                 .replace(/<span(.*?)>/g,'')
                 .replace(/<\/span(.*?)>/g,'')
