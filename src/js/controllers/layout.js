@@ -91,62 +91,62 @@ angular.module('drivein')
     }
 
     function getMetadata(driveData) {
-        var metadataItem = findMetadataItem(driveData.items, 'application/vnd.google-apps.document');
-        if(!metadataItem) {
-          metadataItem = findMetadataItem(driveData.items, 'text/csv');
+      var metadataItem = findMetadataItem(driveData.items, 'application/vnd.google-apps.document');
+      if(!metadataItem) {
+        metadataItem = findMetadataItem(driveData.items, 'text/csv');
+      }
+
+      // get metadata from file (there should be only one per drive-in !)
+      if(metadataItem) {
+        var metadataFileUrl;
+        if(metadataItem.mimeType === 'text/csv') {
+          metadataFileUrl = metadataItem.downloadUrl;
+        }
+        else if(metadataItem.mimeType === 'application/vnd.google-apps.document') {
+          metadataFileUrl = metadataItem.exportLinks['text/html'];
+        }
+        else {
+          $log.warn('found a metadata file with unhandled mime type ', metadataItem.mimeType);
         }
 
-        // get metadata from file (there should be only one per drive-in !)
-        if(metadataItem) {
-          var metadataFileUrl;
-          if(metadataItem.mimeType === 'text/csv') {
-            metadataFileUrl = metadataItem.downloadUrl;
+        return $http({
+          url: metadataFileUrl,
+          method: 'GET',
+          headers: {
+           'Authorization': 'Bearer ' + $scope.access_token
           }
-          else if(metadataItem.mimeType === 'application/vnd.google-apps.document') {
-            metadataFileUrl = metadataItem.exportLinks['text/html'];
-          }
-          else {
-            $log.warn('found a metadata file with unhandled mime type ', metadataItem.mimeType);
-          }
+        }).then(function(response) {
+            var convertedMetadata = null;
 
-          return $http({
-            url: metadataFileUrl,
-            method: 'GET',
-            headers: {
-             'Authorization': 'Bearer ' + $scope.access_token
+            if(metadataItem.mimeType === 'text/csv') {
+              try {
+                convertedMetadata = $.csv.toObjects(response.data).map(cleanCSVHeaders)[0];
+              }
+              catch(error) { // metadata csv is not correct
+                $log.error(error);
+              }
             }
-          }).then(function(response) {
-              var convertedMetadata = null;
-
-              if(metadataItem.mimeType === 'text/csv') {
-                try {
-                  convertedMetadata = $.csv.toObjects(response.data).map(cleanCSVHeaders)[0];
-                }
-                catch(error) { // metadata csv is not correct
-                  $log.error(error);
-                }
+            else {
+              try {
+                convertedMetadata = gdocParser.parseMetadata(response.data);
               }
-              else {
-                try {
-                  convertedMetadata = gdocParser.parseMetadata(response.data);
-                }
-                catch(error) {
-                  $log.error(error);
-                }
+              catch(error) {
+                $log.error(error);
               }
+            }
 
-              // /!\ Hack to fix Angular bad habit of sorting alphabetically.
-              // What a horrible piece of software.
-              // @see https://github.com/angular/angular.js/issues/6210
-              // @see http://stackoverflow.com/questions/19676694/ng-repeat-directive-sort-the-data-when-using-key-value
-              convertedMetadata = { keys: Object.keys(convertedMetadata), raw: convertedMetadata };
-              return convertedMetadata;
-            });
-        }
+            // /!\ Hack to fix Angular bad habit of sorting alphabetically.
+            // What a horrible piece of software.
+            // @see https://github.com/angular/angular.js/issues/6210
+            // @see http://stackoverflow.com/questions/19676694/ng-repeat-directive-sort-the-data-when-using-key-value
+            convertedMetadata = { keys: Object.keys(convertedMetadata), raw: convertedMetadata };
+            return convertedMetadata;
+          });
+      }
 
-        throw new Error(
-          'Metadata file was not found. Ensure a file named "metadata", "crédits" or "credits" exists.'
-        );
+      throw new Error(
+        'Metadata file was not found. Ensure a file named "metadata", "crédits" or "credits" exists.'
+      );
     }
 
     /*
