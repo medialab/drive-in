@@ -41,7 +41,8 @@ angular.module('drivein')
 
               var sidenotes = [];
               rawSidenotes.each(function (i, note) {
-                if (note.innerText.match(/\[\d+\]/gim)) {
+                var t = note.innerText ? note.innerText : note.textContent;
+                if (t.match(/\[\d+\]/gim)) {
                   sidenotes.push({index: i, note: note});
                 } else {
                   $(note).remove();
