@@ -30,7 +30,7 @@ angular.module('drivein')
 
           scope.sections = sections;
 
-          // Deal with sidenotes, if any.
+          // Deal with sidenotes, if any, and remove empty doc.
           $timeout(function() {
             var $gdoc = $(element.find('.gdoc'));
             var $sup = $gdoc.find('sup');
