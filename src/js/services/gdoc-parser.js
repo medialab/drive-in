@@ -54,6 +54,9 @@ angular
     }
 
     function clean(html) {
+      // Fix carriage returns.
+      html = html.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>');
+
       // Comments on gDoc create special tags. Find tags for both the reference in text and
       // the referred comment. Store them. We use this methodology to specify sidenotes.
       var sidenoted = prepareSidenotes(html);
@@ -66,6 +69,7 @@ angular
           closingRgx = /(?:<em>)[^<]+(<\/span>)/gim;
 
       var em = reduce(reduce(embeddified, openingRgx, '<em>'), closingRgx, '</em>');
+      //var s = html.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
       var s = em.replace(/<p class="[^"]*"><span><\/span><\/p>/gim, '<br>')
                 .replace(/<span(.*?)>/g,'')
                 .replace(/<\/span(.*?)>/g,'')
