@@ -55,11 +55,13 @@ angular.module('drivein')
               var lastNoteHeight = 0;
 
               // Position each note to the right gutter next to referencing paragraph.
-              sidenotes.forEach(function (n) {
-                var $s = $($sup.get(n.index));
+              sidenotes.forEach(function (n, i) {
+                var $s = $($sup.get(i));
                 var $note = $(n.note);
                 var $parag = $s.parent();
                 var paragOffset = $parag.offset();
+
+
 
                 // Compare current reference paragraph with the one referencing the previous note.
                 // If they are the same, ensure notes don't overlap.
